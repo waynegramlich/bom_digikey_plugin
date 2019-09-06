@@ -1,0 +1,2 @@
+include README.md
+recursive-include bom_digikey_plugin/ROOT *.xml
