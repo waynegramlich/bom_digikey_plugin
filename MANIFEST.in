@@ -1,2 +1,3 @@
 include README.md
+include bom_digikey_plugin/MISC/www.digikey.com_products_en.html
 recursive-include bom_digikey_plugin/ROOT *.xml

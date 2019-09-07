@@ -16,9 +16,12 @@ setuptools.setup(
     ],
     description="Bill Of Materials Manager",
     entry_points = {
-        "console_scripts": ["bom_digikey_plugin=bom_digikey_plugin:main"],
+        "console_scripts": ["bom_digikey=bom_digikey_plugin:main"],
     },
     include_package_data=True,
+    # install_requires = [
+    #     "bs4",
+    # ],
     license="MIT",
     long_description=long_description_read(),
     long_description_content_type="text/markdown",

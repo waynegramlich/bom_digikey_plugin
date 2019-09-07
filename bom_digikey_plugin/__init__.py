@@ -1,6 +1,8 @@
-from bom_digikey_plugin import digikey_plugin
+from bom_digikey_plugin import digikey
 
 def main():
-    print("=>bom_digikey_plugin.main")
-    digikey_plugin.main()
-    print("<=bom_digikey_plugin.main")
+    print("=>main()")
+    digikey.main()
+    print("<=main()")
+
+
