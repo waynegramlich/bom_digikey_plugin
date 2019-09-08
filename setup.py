@@ -1,9 +1,14 @@
+import os
 import setuptools
 
 def long_description_read():
     with open("README.md") as readme_file:
         long_description = readme_file.read()
     return long_description
+
+environment = os.environ
+assert "BOM_VERSION" in environment, "BOM_VERSION environment variable is not set"
+version = environment["BOM_VERSION"]
 
 # Arguments to *setup*() are in alphabetical order:
 setuptools.setup(
@@ -12,7 +17,7 @@ setuptools.setup(
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
-        "Opearating System :: OS Independent",
+        "Operating System :: OS Independent",
     ],
     description="Bill Of Materials Manager",
     entry_points = {
@@ -25,11 +30,11 @@ setuptools.setup(
     license="MIT",
     long_description=long_description_read(),
     long_description_content_type="text/markdown",
-    name="bom_digikey_plugin_wayne_gramlich",
+    name="bom_digikey_plugin_waynegramlich",
     packages=[
         "bom_digikey_plugin",
     ],
     python_requires=">=3.6",
     url="https://github.com/waynegramlich/bom_digikey_plugin",
-    version="0.0.1"
+    version=version,
 )
