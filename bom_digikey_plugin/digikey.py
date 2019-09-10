@@ -1,4 +1,24 @@
-#!/usr/bin/env python3
+# MIT License
+# 
+# Copyright (c) 2019 Wayne C. Gramlich
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 # <------------------------------------------- 100 characters -----------------------------------> #
 
@@ -50,19 +70,25 @@ def main():
     return result
 
 # url_load():
-def url_load(url, output_file_name, tracing=None):
+def collection_get(collections, searches_root, tracing=None):
     # Verify argument types:
-    assert isinstance(url, str)
-    assert isinstance(output_file_name, str)
+    assert isinstance(collections, bom.Collections)    
+    assert isinstance(searches_root, str)
+    assert isinstance(tracing, str) or tracing is None
 
     # Perform any requested *tracing*:
     next_tracing = None if tracing is None else tracing + " "
     if tracing is not None:
-        print(f"{tracing}=>url_load('{url}', '{output_file_name}')")
+        print(f"{tracing}=>digikey.py:collection_get('{collections.name}', '{searches_root}')")
+
+    # Create *collection*:
+    collection = DigikeyCollection(collections, searches_root, tracing=next_tracing)
 
     # Wrap up any requested *tracing*:
     if tracing is not None:
-        print(f"{tracing}<=url_load('{url}', '{output_file_name}')")
+        print(f"{tracing}<=digikey.py:collection_get('{collections.name}', '{searches_root}')"
+              f"=>'{collection.name}'")
+    return collection
 
 # Digikey:
 class Digikey:
@@ -689,6 +715,60 @@ class Digikey:
         if tracing is not None:
             print(f"{tracing}<=Digikey.soup_read(*)")
         return soup
+
+# DigikeyCollection():
+class DigikeyCollection(bom.Collection):
+
+    # DigikeyCollection.__init__():
+    def __init__(self, collections, searches_root, tracing=None):
+        # Verify argument types:
+        assert isinstance(collections, bom.Collections)
+        assert isinstance(searches_root, str)
+        assert isinstance(tracing, str) or tracing is None
+
+        # Perform any requested *tracing*:
+        next_tracing = None if tracing is None else tracing + " "
+        if tracing is not None:
+            print(f"{tracing}=>DigikeyCollection.__init__('{collections.name}', '{searches_root}')")
+
+        # Compute the path to the *collection_root*:
+        digikey_py_file_path = __file__
+        if tracing is not None:
+            print(f"{tracing}digikey_py_file_path=>'{digikey_py_file_path}'")
+        digikey_directory, digikey_py = os.path.split(digikey_py_file_path)
+        if tracing is not None:
+            print(f"{tracing}digikey_directory='{digikey_directory}'")
+        collection_root = os.path.join(digikey_directory, "ROOT")
+        if tracing is not None:
+            print(f"{tracing}collection_root='{collection_root}'")
+        assert os.path.isdir(collection_root)
+
+        # Initialize *digikey_collection* (i.e. *self*):
+        digikey_collection = self
+        super().__init__("Digi-Key", collections, collection_root, searches_root,
+                         tracing=next_tracing)
+
+        # Wrap up any requested *tracing*:
+        if tracing is not None:
+            print(f"{tracing}<=DigikeyCollection.__init__('{collections.name}', '{searches_root}')")
+
+    # DigikeyCollection.url_load():
+    def url_load(self, url, file_name, tracing=None):
+        # Verify argument types:
+        assert isinstance(url, str)
+        assert isisntance(file_name, str)
+        assert isinstance(tracing, str) or tracing is None
+
+        # Perform any requested *tracing*:
+        if tracing is not None:
+            print(f"{tracing}=>DigikeyCollection.url_load('{url}', '{file_name}')")
+
+        result = list()
+
+        # Wrap up any requested *tracing* and return *result*;
+        if tracing is not None:
+            print(f"{tracing}<=DigikeyCollection.url_load('{url}', '{file_name}')=>*")
+        return result
 
 # DigikeyDirectory:
 class DigikeyDirectory(bom.Directory):
