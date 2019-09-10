@@ -22,6 +22,7 @@ setuptools.setup(
     description="Bill Of Materials Manager",
     entry_points = {
         "console_scripts": ["bom_digikey=bom_digikey_plugin:main"],
+        "bom_manager_collection_url_load": ["url_load=bom_digikey_plugin.digikey:url_load"],
     },
     include_package_data=True,
     # install_requires = [
