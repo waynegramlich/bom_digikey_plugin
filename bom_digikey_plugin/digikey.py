@@ -1,3 +1,7 @@
+# # BOM Manager Digi-Key Plugin
+#
+# ## License
+#
 # MIT License
 # 
 # Copyright (c) 2019 Wayne C. Gramlich
@@ -19,12 +23,12 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
+#
+## Coding Standars:
+#
 # <------------------------------------------- 100 characters -----------------------------------> #
-
-# Coding standards:
-# * In general, the coding guidelines for PEP 8 are used.
 # * All code and docmenation lines must be on lines of 100 characters or less.
+# * In general, the coding guidelines for PEP 8 are used.
 # * Comments:
 #   * All code comments are written in [Markdown](https://en.wikipedia.org/wiki/Markdown).
 #   * Code is organized into blocks are preceeded by comment that explains the code block.
@@ -42,7 +46,7 @@
 #   * Lint with:
 #
 #       flake8 --max-line-length=100 digikey.py | fgrep -v :3:1:
-#
+
 from bom_manager import bom
 import bs4
 import glob
@@ -752,22 +756,148 @@ class DigikeyCollection(bom.Collection):
         if tracing is not None:
             print(f"{tracing}<=DigikeyCollection.__init__('{collections.name}', '{searches_root}')")
 
-    # DigikeyCollection.url_load():
-    def url_load(self, url, file_name, tracing=None):
+    # DigikeyCollection.csv_fetch(): 
+    def csv_fetch(self, search_url, csv_file_name, tracing=None):
         # Verify argument types:
-        assert isinstance(url, str)
-        assert isisntance(file_name, str)
+        assert isinstance(search_url, str)
+        assert isinstance(csv_file_name, str)
         assert isinstance(tracing, str) or tracing is None
 
         # Perform any requested *tracing*:
+        next_tracing = None if tracing is None else tracing + " "
         if tracing is not None:
-            print(f"{tracing}=>DigikeyCollection.url_load('{url}', '{file_name}')")
+            print(f"{tracing}=>DigikeyCollection.csv_fetch('{search_url}', '{csv_file_name}')")
 
-        result = list()
+        # Construct the header values that need to be sent with the *search_url*:
+        authority_text = "www.digikey.com"
+        accept_text = (
+            "text/html,application/xhtml+xml,application/xml;"
+            "q=0.9,image/webp,image/apng,*/*;"
+            "q=0.8,application/signed-exchange;"
+            "v=b3"
+        )
+        accept_encoding_text = "gzip, deflate, br"
+        cookie_text = (
+            "i10c.bdddb=c2-f0103ZLNqAeI3BH6yYOfG7TZlRtCrMwzKDQfPMtvESnCuVjBtyWjJ1l"
+            "kqXtKsvswxDrjRHdkESNCtx04RiOfGqfIlRUHqt1qPnlkPolfJSiIRsomx0RhMqeKlRtT3"
+            "jxvKEOjKMDfJSvUoxo6uXWaGVZkqoAhloxqQlofPwYkJcS6fhQ6tzOgotZkQMtHDyjnA4lk"
+            "PHeIKNnroxoY8XJKBvefrzwFru4qPnlkPglfJSiIRvjBTuTfbEZkqMupstsvz8qkl7wWr3i"
+            "HtspjsuTFBve9SHoHqjyTKIPfPM3uiiAioxo6uXOfGvdfq4tFloxqPnlkPcxyESnCuVjBt1"
+            "VmBvHmsYoHqjxVKDq3fhvfJSiIRsoBsxOftucfqRoMRjxVKDq3BuEMuNnHoyM9oz3aGv4ul"
+            "RtCrMsvP8tJOPeoESNGw2q6tZSiN2ZkQQxHxjxVOHukKMDjOQlCtXnGt4OfqujoqMtrpt3y"
+            "KDQjVMffM3iHtsolozT7WqeklSRGloXqPDHZHCUfJSiIRvjBTuTfQeKKYMtHlpVtKDQfPM2"
+            "uESnCuVm6tZOfGK1fqRoIOjxvKDrfQvYkvNnuJsojozTaLW"
+        )
+
+        # Construct *headers* 
+        headers = {
+            "authority": authority_text,
+            "accept": accept_text,
+            "accept-encoding": accept_encoding_text,
+            "cookie": cookie_text
+        }
+
+        # Attempt the fetch the contents of *search_url* using *headers*:
+        try:
+            response = requests.get(search_url, headers=headers)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as http_error:
+            assert False, f"HTTP error occurred '{http_error}'"
+        except Exception as error:
+            assert False, f"Other exception occurred: '{error}'"
+                    
+        # Now parse the resulting *html_text* using a *soup* to find the *csv_url*:
+        html_text = response.content
+
+        soup = bs4.BeautifulSoup(html_text, features="lxml")
+        assert soup is not None
+        #print("type(soup)=", type(soup))
+        pairs = []
+        pairs_text = None
+        print("here 2b")
+        for form_tag in soup.find_all("form"):
+            assert isinstance(form_tag, bs4.element.Tag)
+            name = form_tag.get("name")
+            if name == "downloadform":
+                # We found it:
+                print(f"form_tag={form_tag}")
+                for index, input_tag in enumerate(form_tag.children):
+                    if isinstance(input_tag, bs4.element.Tag):
+                        print(input_tag)
+                        assert input_tag.name.lower() == "input"
+                        input_name = input_tag.get("name")
+                        print(f"input_name='{input_name}'")
+                        input_value = input_tag.get("value")
+                        print(f"input_value='{input_value}'")
+                        input_value = input_value.replace(",", "%2C")
+                        input_value = input_value.replace('|', "%7C")
+                        input_value = input_value.replace(' ', "+")
+                        pair = f"{input_name}={input_value}"
+                        print(f"pair='{pair}'")
+                        pairs.append(pair)
+                pairs_text = '&'.join(pairs)
+                print(f"pairs_text='{pairs_text}'")
+        assert isinstance(pairs_text, str)
+
+        # Construct the *csv_url*:
+        csv_url = "https://www.digikey.com/product-search/download.csv?" + pairs_text
+        if tracing is not None:
+            print(f"{tracing}csv_url='{csv_url}'")
+
+        # Construct the text strings fort the *headers*:
+        authority_text = "www.digikey.com"
+        accept_text = (
+            "text/html,application/xhtml+xml,application/xml;"
+            "q=0.9,image/webp,image/apng,*/*;"
+            "q=0.8,application/signed-exchange;"
+            "v=b3"
+        )
+        accept_encoding_text = "gzip, deflate, br"
+        cookie_text = (
+            "i10c.bdddb="
+            "c2-94990ugmJW7kVZcVNxn4faE4FqDhn8MKnfIFvs7GjpBeKHE8KVv5aK34FQDgF"
+            "PFsXXF9jma8opCeDMnVIOKCaK34GOHjEJSFoCA9oxF4ir7hqL8asJs4nXy9FlJEI"
+            "8MujcFW5Bx9imDEGHDADOsEK9ptrlIgAEuIjcp4olPJUjxXDMDVJwtzfuy9FDXE5"
+            "sHKoXGhrj3FpmCGDMDuQJs4aLb7AqsbFDhdjcF4pJ4EdrmbIMZLbAQfaK34GOHbF"
+            "nHKo1rzjl24jP7lrHDaiYHK2ly9FlJEADMKpXFmomx9imCGDMDqccn4fF4hAqIgF"
+            "JHKRcFFjl24iR7gIfTvaJs4aLb4FqHfADzJnXF9jqd4iR7gIfz8t0TzfKyAnpDgp"
+            "8MKEmA9og3hdrCbLvCdJSn4FJ6EFlIGEHKOjcp8sm14iRBkMT8asNwBmF3jEvJfA"
+            "DwJtgD4oL1Eps7gsLJaKJvfaK34FQDgFfcFocAAMr27pmCGDMD17GivaK34GOGbF"
+            "nHKomypOTx9imDEGHDADOsTpF39ArqeADwFoceWjl24jP7gIHDbDPRzfwy9JlIlA"
+            "DTFocAEP"
+        )
+
+        # Construct *headers*:
+        headers = {
+           "authority": authority_text,
+            "accept": accept_text,
+            "accept-encoding": accept_encoding_text,
+            "cookie": cookie_text
+        }
+
+        # Attempt the fetch the contents of *csv_fetch_url* using *headers*:
+        if tracing is not None:
+            print(f"{tracing}A:Fetching '{csv_url}' extracted '{search_url}' contents:")
+        try:
+            response = requests.get(csv_url, headers=headers)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as http_error:
+            assert False, f"HTTP error occurred '{http_error}'"
+        except Exception as error:
+            assert False, f"Other exception occurred: '{error}'"
+                    
+        # Now write *csv_text* out to *csv_file_name*:
+        csv_text = response.content
+        with open(csv_file_name, "wb") as csv_file:
+            csv_file.write(csv_text)
+        if tracing is not None:
+           print(f"{tracing}Wrote out '{csv_file_name}'")
 
         # Wrap up any requested *tracing* and return *result*;
+        result = True
         if tracing is not None:
-            print(f"{tracing}<=DigikeyCollection.url_load('{url}', '{file_name}')=>*")
+            print(f"{tracing}<=DigikeyCollection.csv_fetch('{search_url}', '{csv_file_name}')"
+                  f"=>{result}")
         return result
 
 # DigikeyDirectory:
