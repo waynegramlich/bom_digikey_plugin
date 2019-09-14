@@ -32,6 +32,7 @@ def long_description_read():
 environment = os.environ
 assert "BOM_VERSION" in environment, "BOM_VERSION environment variable is not set"
 version = environment["BOM_VERSION"]
+is_test = version.startswith("0.0.")
 
 # Arguments to *setup*() are in alphabetical order:
 setuptools.setup(
@@ -48,13 +49,13 @@ setuptools.setup(
         "bom_manager_collection_get": ["collection_get=bom_digikey_plugin.digikey:collection_get"],
     },
     include_package_data=True,
-    # install_requires = [
-    #     "bs4",
-    # ],
+    install_requires = [] if is_test else [
+        "bs4",
+    ],
     license="MIT",
     long_description=long_description_read(),
     long_description_content_type="text/markdown",
-    name="bom_digikey_plugin_waynegramlich",
+    name=("bom_digikey_plugin_waynegramlich" if is_test else "bom_digikey_plugin"),
     packages=[
         "bom_digikey_plugin",
     ],
