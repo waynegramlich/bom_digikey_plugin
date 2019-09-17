@@ -3,19 +3,19 @@
 # ## License
 #
 # MIT License
-# 
+#
 # Copyright (c) 2019 Wayne C. Gramlich
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,7 +24,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-## Coding Standars:
+# # Coding Standars:
 #
 # <------------------------------------------- 100 characters -----------------------------------> #
 # * All code and docmenation lines must be on lines of 100 characters or less.
@@ -54,6 +54,7 @@ import requests
 import time
 import os
 
+
 # main():
 def main():
     # Perform any requested *tracing*:
@@ -73,10 +74,11 @@ def main():
         print(f"{tracing}<=main()=>{result}")
     return result
 
+
 # url_load():
 def collection_get(collections, searches_root, tracing=None):
     # Verify argument types:
-    assert isinstance(collections, bom.Collections)    
+    assert isinstance(collections, bom.Collections)
     assert isinstance(searches_root, str)
     assert isinstance(tracing, str) or tracing is None
 
@@ -94,6 +96,7 @@ def collection_get(collections, searches_root, tracing=None):
               f"=>'{collection.name}'")
     return collection
 
+
 # Digikey:
 class Digikey:
 
@@ -104,7 +107,7 @@ class Digikey:
             print(f"{tracing}=>Digikey.__init__()")
 
         # Extract the *digikey_package_directory* name:
-        top_directory = "/home/wayne/public_html/projects/bom_digikey_plugin"
+        #  top_directory = "/home/wayne/public_html/projects/bom_digikey_plugin"
         digikey_py_file_name = __file__
         if tracing is not None:
             print(f"{tracing}__file__='{__file__}'")
@@ -122,12 +125,11 @@ class Digikey:
         csvs_directory = os.path.join(digikey_package_directory, "CSVS")
         miscellaneous_directory = os.path.join(digikey_package_directory, "MISC")
         products_html_file_name = os.path.join(miscellaneous_directory,
-                                              "www.digikey.com_products_en.html")
+                                               "www.digikey.com_products_en.html")
         if tracing is not None:
             print(f"{tracing}root_directory='{root_directory}'")
             print(f"{tracing}csvs_directory='{csvs_directory}'")
             print(f"{tracing}products_html_file_name='{products_html_file_name}'")
-
 
         # Make sure everything exists:
         assert os.path.isdir(root_directory)
@@ -230,7 +232,7 @@ class Digikey:
         # Create the *collection* (*collections* is temporary and is not really used):
         collections = bom.Collections("Collections", [], "", None)
         collection = bom.Collection("Digi-Key", collections, root_directory, "", None)
-        parent = collection
+        # parent = collection
         assert collections.has_child(collection)
 
         # Create the sorted *hrefs_table_keys*.  The first 20 entries look like:
@@ -274,7 +276,8 @@ class Digikey:
                 pass
             elif items < 0:
                 # We have a new *DigikeyDirectory* to create and make the *current_directory*.
-                current_directory = DigikeyDirectory(name, collection, id, url, tracing=next_tracing)
+                current_directory = DigikeyDirectory(name, collection, id, url,
+                                                     tracing=next_tracing)
             else:
                 # We create a new *DigikeyTable* that is appended to *current_directory*.
                 # Note: the initializer automatically appends *table* to *current_directory*:
@@ -320,7 +323,7 @@ class Digikey:
         assert isinstance(digikey_collection, bom.Collection)
         assert isinstance(hrefs_table, dict)
         assert isinstance(tracing, str) or tracing is None
-    
+
         # Perform any requested *tracing*:
         if tracing is not None:
             print(f"{tracing}=>Digikey.collection_verify()")
@@ -329,8 +332,8 @@ class Digikey:
         # count them up, and validate that the sizes all match:
         directories = digikey_collection.directories_get()
         directories_size = len(directories)
-        tables = digikey_collection.tables_get() 
-        tables_size= len(tables)
+        tables = digikey_collection.tables_get()
+        tables_size = len(tables)
         hrefs_table_size = len(hrefs_table)
 
         # Verify that we did not loose anything during extraction:
@@ -396,7 +399,7 @@ class Digikey:
                                                       tracing=next_tracing)
 
         # Wrap up any requested *tracing*:
-        result = downloads_count
+        # result = downloads_count
         next_tracing = None if tracing is None else tracing + " "
         if tracing is not None:
             print(f"{tracing}<=Digikey.csvs_download(*, *, '{collection.name}')=>{downloads_count}")
@@ -595,7 +598,7 @@ class Digikey:
         assert isinstance(tracing, str) or tracing is None
 
         # Perform any requested *tracing*:
-        next_tracing = None if tracing is None else tracing + " "
+        # next_tracing = None if tracing is None else tracing + " "
         if tracing is not None:
             print(f"{tracing}Digikey.soup_extract(*, *)")
 
@@ -663,15 +666,15 @@ class Digikey:
                 # into *hrefs_table* using *href* as the key.  Since same *href* can occur multiple
                 # times in the *soup* we store everything in a the *matches* list containing
                 # a *match* of 5-tuples:
-                #href_key = f"{base}/{id}"
+                # href_key = f"{base}/{id}"
                 if href in hrefs_table:
                     matches = hrefs_table[href]
                 else:
                     matches = list()
                     hrefs_table[href] = matches
                 url = "https://www.digikey.com/products/en/" + href
-                #if base.startswith("capacitors"):
-                #    print("url='{0}'".format(url))
+                # if base.startswith("capacitors"):
+                #     print("url='{0}'".format(url))
                 match = (href, base, id, a_contents_text, li_contents_text, url)
                 matches.append(match)
         # We are done scraping information out of the the *soup*.  Everything we need is
@@ -691,7 +694,7 @@ class Digikey:
 
         # Verify argument types:
         assert isinstance(tracing, str) or tracing is None
-        
+
         # Perform any requested *tracing*:
         if tracing is not None:
             print(f"{tracing}=>Digikey.soup_read(*)")
@@ -719,6 +722,7 @@ class Digikey:
         if tracing is not None:
             print(f"{tracing}<=Digikey.soup_read(*)")
         return soup
+
 
 # DigikeyCollection():
 class DigikeyCollection(bom.Collection):
@@ -748,7 +752,7 @@ class DigikeyCollection(bom.Collection):
         assert os.path.isdir(collection_root)
 
         # Initialize *digikey_collection* (i.e. *self*):
-        digikey_collection = self
+        # digikey_collection = self
         super().__init__("Digi-Key", collections, collection_root, searches_root,
                          tracing=next_tracing)
 
@@ -756,7 +760,7 @@ class DigikeyCollection(bom.Collection):
         if tracing is not None:
             print(f"{tracing}<=DigikeyCollection.__init__('{collections.name}', '{searches_root}')")
 
-    # DigikeyCollection.csv_fetch(): 
+    # DigikeyCollection.csv_fetch():
     def csv_fetch(self, search_url, csv_file_name, tracing=None):
         # Verify argument types:
         assert isinstance(search_url, str)
@@ -764,7 +768,7 @@ class DigikeyCollection(bom.Collection):
         assert isinstance(tracing, str) or tracing is None
 
         # Perform any requested *tracing*:
-        next_tracing = None if tracing is None else tracing + " "
+        # next_tracing = None if tracing is None else tracing + " "
         if tracing is not None:
             print(f"{tracing}=>DigikeyCollection.csv_fetch('{search_url}', '{csv_file_name}')")
 
@@ -789,7 +793,7 @@ class DigikeyCollection(bom.Collection):
             "uESnCuVm6tZOfGK1fqRoIOjxvKDrfQvYkvNnuJsojozTaLW"
         )
 
-        # Construct *headers* 
+        # Construct *headers*:
         headers = {
             "authority": authority_text,
             "accept": accept_text,
@@ -805,13 +809,13 @@ class DigikeyCollection(bom.Collection):
             assert False, f"HTTP error occurred '{http_error}'"
         except Exception as error:
             assert False, f"Other exception occurred: '{error}'"
-                    
+
         # Now parse the resulting *html_text* using a *soup* to find the *csv_url*:
         html_text = response.content
 
         soup = bs4.BeautifulSoup(html_text, features="lxml")
         assert soup is not None
-        #print(f"{tracing}type(soup)=", type(soup))
+        # print(f"{tracing}type(soup)=", type(soup))
         pairs = []
         pairs_text = None
         if tracing is not None:
@@ -825,7 +829,7 @@ class DigikeyCollection(bom.Collection):
                     print(f"{tracing}form_tag={form_tag}")
                 for index, input_tag in enumerate(form_tag.children):
                     if isinstance(input_tag, bs4.element.Tag):
-                        #print(input_tag)
+                        # print(input_tag)
                         assert input_tag.name.lower() == "input"
                         input_name = input_tag.get("name")
                         input_value = input_tag.get("value")
@@ -873,7 +877,7 @@ class DigikeyCollection(bom.Collection):
 
         # Construct *headers*:
         headers = {
-           "authority": authority_text,
+            "authority": authority_text,
             "accept": accept_text,
             "accept-encoding": accept_encoding_text,
             "cookie": cookie_text
@@ -889,13 +893,13 @@ class DigikeyCollection(bom.Collection):
             assert False, f"HTTP error occurred '{http_error}'"
         except Exception as error:
             assert False, f"Other exception occurred: '{error}'"
-                    
+
         # Now write *csv_text* out to *csv_file_name*:
         csv_text = response.content
         with open(csv_file_name, "wb") as csv_file:
             csv_file.write(csv_text)
         if tracing is not None:
-           print(f"{tracing}Wrote out '{csv_file_name}'")
+            print(f"{tracing}Wrote out '{csv_file_name}'")
 
         # Wrap up any requested *tracing* and return *result*;
         result = True
@@ -903,6 +907,7 @@ class DigikeyCollection(bom.Collection):
             print(f"{tracing}<=DigikeyCollection.csv_fetch('{search_url}', '{csv_file_name}')"
                   f"=>{result}")
         return result
+
 
 # DigikeyDirectory:
 class DigikeyDirectory(bom.Directory):
@@ -1103,11 +1108,11 @@ class DigikeyDirectory(bom.Directory):
         for index, group_name in enumerate(sorted(groups_table.keys())):
             tables_list = groups_table[group_name]
             # Convert *group_title* to *directory_name*:
-            #directory_name = digikey_directory.title2file_name(group_title)
+            # directory_name = digikey_directory.title2file_name(group_title)
             # print("  Group_Title[{0}]'{1}':".format(group_title_index, group_title))
 
             # Create the *sub_directory*:
-            #sub_directory_path = digikey_directory.path + "/" + directory_name
+            # sub_directory_path = digikey_directory.path + "/" + directory_name
             sub_directory = DigikeyDirectory(group_name, digikey_directory, id, url,
                                              tracing=next_tracing)
             # Note: *DigikeyDirectory()* automatically appends to the
@@ -1125,21 +1130,23 @@ class DigikeyDirectory(bom.Directory):
                 # When *hyphen_index* is < 0, we are dealing with table/directory match problem
                 # (see above); otherwise, just grab the stuff to the right of the hyphen:
                 if hyphen_index >= 0:
-                    sub_group_title = name[hyphen_index+3:].strip()
+                    # sub_group_title = name[hyphen_index+3:].strip()
+                    pass
                 else:
-                    sub_group_title = "Others"
+                    # sub_group_title = "Others"
                     # print("  Creating 'Others' title for group '{0}'".format(title))
+                    pass
 
                 # Create the new *sub_table*:
-                #path = sub_directory_path
-                #url = table.url
+                # path = sub_directory_path
+                # url = table.url
                 href = ""
                 DigikeyTable(name, sub_directory, base, id, href, url, tracing=next_tracing)
                 # Note: *DigikeyTable()* automatically appends *sub_table* to the parent
                 # *sub_directory*:
 
             # Sort *sub_directory* just for fun.  It probably does not do much of anything:
-            #sub_directory.sort(lambda title: title.name, tracing=next_tracing)
+            # sub_directory.sort(lambda title: title.name, tracing=next_tracing)
 
         # Again, sort *digikey_directory* even though it is unlikely to change anything:
         # digikey_directory.sort(lambda table: table.name)
@@ -1191,11 +1198,10 @@ class DigikeyTable(bom.Table):
         assert isinstance(tracing, str) or tracing is None
 
         # Perform any requested *tracing*:
-        next_tracing = None if tracing is None else tracing + " "
+        # next_tracing = None if tracing is None else tracing + " "
         if tracing is not None:
             print(f"{tracing}=>DigikeyTable.__init__('{name}', '{parent.name}', "
                   f"'{base}', {id}, '{url}')")
-
 
         # Initialize the parent *bom.Table* class for *digikey_table* (i.e. *self*):
         digikey_table = self
@@ -1222,7 +1228,7 @@ class DigikeyTable(bom.Table):
         # Perform any requested *tracing* for *digikey_table* (i.e. *self*):
         digikey_table = self
         name = digikey_table.name
-        next_tracing = None if tracing is None else tracing + " "
+        # next_tracing = None if tracing is None else tracing + " "
         if tracing is not None:
             print(f"{tracing}=>DigikeyTable.csvs_download('{name}', '{csvs_directory}',"
                   f" {downloads_count})")
@@ -1250,23 +1256,23 @@ class DigikeyTable(bom.Table):
                 "authority": "www.digikey.com",
                 "accept-encoding": "gzip, deflate, br",
                 "cookie": ("i10c.bdddb="
-                  "c2-94990ugmJW7kVZcVNxn4faE4FqDhn8MKnfIFvs7GjpBeKHE8KVv5aK34FQDgF"
-                  "PFsXXF9jma8opCeDMnVIOKCaK34GOHjEJSFoCA9oxF4ir7hqL8asJs4nXy9FlJEI"
-                  "8MujcFW5Bx9imDEGHDADOsEK9ptrlIgAEuIjcp4olPJUjxXDMDVJwtzfuy9FDXE5"
-                  "sHKoXGhrj3FpmCGDMDuQJs4aLb7AqsbFDhdjcF4pJ4EdrmbIMZLbAQfaK34GOHbF"
-                  "nHKo1rzjl24jP7lrHDaiYHK2ly9FlJEADMKpXFmomx9imCGDMDqccn4fF4hAqIgF"
-                  "JHKRcFFjl24iR7gIfTvaJs4aLb4FqHfADzJnXF9jqd4iR7gIfz8t0TzfKyAnpDgp"
-                  "8MKEmA9og3hdrCbLvCdJSn4FJ6EFlIGEHKOjcp8sm14iRBkMT8asNwBmF3jEvJfA"
-                  "DwJtgD4oL1Eps7gsLJaKJvfaK34FQDgFfcFocAAMr27pmCGDMD17GivaK34GOGbF"
-                  "nHKomypOTx9imDEGHDADOsTpF39ArqeADwFoceWjl24jP7gIHDbDPRzfwy9JlIlA"
-                  "DTFocAEP")
+                           "c2-94990ugmJW7kVZcVNxn4faE4FqDhn8MKnfIFvs7GjpBeKHE8KVv5aK34FQDgF"
+                           "PFsXXF9jma8opCeDMnVIOKCaK34GOHjEJSFoCA9oxF4ir7hqL8asJs4nXy9FlJEI"
+                           "8MujcFW5Bx9imDEGHDADOsEK9ptrlIgAEuIjcp4olPJUjxXDMDVJwtzfuy9FDXE5"
+                           "sHKoXGhrj3FpmCGDMDuQJs4aLb7AqsbFDhdjcF4pJ4EdrmbIMZLbAQfaK34GOHbF"
+                           "nHKo1rzjl24jP7lrHDaiYHK2ly9FlJEADMKpXFmomx9imCGDMDqccn4fF4hAqIgF"
+                           "JHKRcFFjl24iR7gIfTvaJs4aLb4FqHfADzJnXF9jqd4iR7gIfz8t0TzfKyAnpDgp"
+                           "8MKEmA9og3hdrCbLvCdJSn4FJ6EFlIGEHKOjcp8sm14iRBkMT8asNwBmF3jEvJfA"
+                           "DwJtgD4oL1Eps7gsLJaKJvfaK34FQDgFfcFocAAMr27pmCGDMD17GivaK34GOGbF"
+                           "nHKomypOTx9imDEGHDADOsTpF39ArqeADwFoceWjl24jP7gIHDbDPRzfwy9JlIlA"
+                           "DTFocAEP")
                 }
 
             # Perform the download:
             print("DigikeyTable.csvs_download: '{0}':{1}".format(csv_file_name, id))
             response = requests.get(url, params=parameters, headers=headers)
-            #print(f"response.headers={response.headers}")
-            #print(f"rsponse.content='{response.content}")
+            # print(f"response.headers={response.headers}")
+            # print(f"rsponse.content='{response.content}")
 
             # Write the content out to *csv_file_name*:
             with open(csv_file_name, "wb") as csv_file:
@@ -1310,7 +1316,7 @@ class DigikeyTable(bom.Table):
         # Perform any requested *tracing* for *digikey_table* (i.e. *self*):
         digikey_table = self
         name = digikey_table.name
-        next_tracing = None if tracing is None else tracing + " "
+        # next_tracing = None if tracing is None else tracing + " "
         if tracing is not None:
             print(f"{tracing}=>DigikeyTable.save('{name}')")
 
@@ -1329,7 +1335,7 @@ class DigikeyTable(bom.Table):
             print(f"{tracing}collection_root='{collection_root}'")
             print(f"{tracing}relative_path='{relative_path}'")
             print(f"{tracing}xml_file_name='{xml_file_name}'")
-        
+
         # Write out *xml_text* to *xml_file_name*:
         digikey_table.directory_create(collection_root)
         with open(xml_file_name, "w") as xml_file:
@@ -1344,7 +1350,6 @@ class DigikeyTable(bom.Table):
         digikey_table = self
         return digikey_table.file_name2title()
 
-    
     # DigikeyTable.xml_lines_append():
     def xxx_xml_lines_append(self, xml_lines, indent):
         # Verify argument types:
@@ -1372,6 +1377,7 @@ class DigikeyTable(bom.Table):
 
         # Close out `</DigikeyTable>` tag:
         xml_lines.append(f'{indent}</DigikeyTable>')
+
 
 if __name__ == "__main__":
     main()
