@@ -68,14 +68,15 @@ def main(tracing=""):
 
 # url_load():
 @trace(1)
-def collection_get(collections, searches_root, tracing=""):
+def collection_get(collections, searches_root, gui, tracing=""):
     # Verify argument types:
     assert isinstance(collections, bom.Collections)
     assert isinstance(searches_root, str)
+    assert isinstance(gui, bom.Gui)
     assert isinstance(tracing, str)
 
     # Create *collection*:
-    collection = DigikeyCollection(collections, searches_root)
+    collection = DigikeyCollection(collections, searches_root, gui)
     return collection
 
 
@@ -626,7 +627,7 @@ class DigikeyCollection(bom.Collection):
 
     # DigikeyCollection.__init__():
     @trace(1)
-    def __init__(self, collections, searches_root, tracing=""):
+    def __init__(self, collections, searches_root, gui, tracing=""):
         # Verify argument types:
         assert isinstance(collections, bom.Collections)
         assert isinstance(searches_root, str)
@@ -643,7 +644,7 @@ class DigikeyCollection(bom.Collection):
         assert os.path.isdir(collection_root)
 
         # Initialize *digikey_collection* (i.e. *self*):
-        super().__init__("Digi-Key", collections, collection_root, searches_root)
+        super().__init__("Digi-Key", collections, collection_root, searches_root, gui)
         digikey_collection = self
         assert digikey_collection.name == "Digi-Key"
 
