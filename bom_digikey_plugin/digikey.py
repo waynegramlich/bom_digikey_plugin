@@ -650,7 +650,7 @@ class DigikeyCollection(bom.Collection):
 
     # DigikeyCollection.__str__():
     def __str__(self):
-        digikey_collection = self
+        # digikey_collection = self
         return f"DigikeyCollection('Digi-Key')"
 
     # DigikeyCollection.csv_fetch():
@@ -831,7 +831,6 @@ class DigikeyDirectory(bom.Directory):
 
         # Grab some values from *digikey_directory* (i.e. *self*):
         digikey_directory = self
-        name = digikey_directory.name
         children = digikey_directory.children_get()
         downloads_count = 0
         for sub_node in children:
@@ -1075,8 +1074,6 @@ class DigikeyTable(bom.Table):
 
         # Perform any requested *tracing* for *digikey_table* (i.e. *self*):
         digikey_table = self
-        name = digikey_table.name
-
         base = digikey_table.base
         id = digikey_table.id
         csv_file_name = csvs_directory + "/" + base + ".csv"
@@ -1135,7 +1132,6 @@ class DigikeyTable(bom.Table):
         digikey_table = self
         base = digikey_table.base
         collection = digikey_table.collection
-        name = digikey_table.name
 
         # Compute the *csv_full_name* and return it:
         collection_root = collection.collection_root
@@ -1149,12 +1145,9 @@ class DigikeyTable(bom.Table):
         # Verify argument types:
         assert isinstance(tracing, str)
 
-        # Grab some values from *digikey_table* (i.e. *self*):
-        digikey_table = self
-        name = digikey_table.name
-
         # Convert *digikey_table* (i.e. *self*) into a single *xml_text* string:
         xml_lines = list()
+        digikey_table = self
         digikey_table.xml_lines_append(xml_lines, "")
         xml_lines.append("")
         xml_text = '\n'.join(xml_lines)
