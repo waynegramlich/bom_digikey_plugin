@@ -47,35 +47,42 @@
 #
 #       flake8 --max-line-length=100 digikey.py | fgrep -v :3:1:
 
+from argparse import ArgumentParser
 from bom_manager import bom
-from bom_manager.tracing import trace
+from bom_manager.tracing import trace, trace_level_set
 import bs4
 import glob
+from io import IOBase
+import os
 import requests
 import time
-import os
+from typing import Any, Dict, List, Tuple
+Match = Tuple[str, int, str, str, str]
 
 
 # main():
-@trace(1)
-def main(tracing=""):
+def main(tracing: str = "") -> int:
     # Create the *digikey* object and process it:
-    digikey = Digikey()
-    digikey.process()
-    result = 0
+
+    # Parse the command line:
+    parser: ArgumentParser = ArgumentParser(description="Digi-Key Collection Constructor.")
+    parser.add_argument("-v", "--verbose", action="count",
+                        help="Set tracing level (defaults to 0 which is off).")
+    parsed_arguments: Dict[str, Any] = vars(parser.parse_args())
+    verbose_count: int = 0 if parsed_arguments["verbose"] is None else parsed_arguments["verbose"]
+    trace_level_set(verbose_count)
+
+    gui: bom.Gui = bom.Gui()
+    digikey: Digikey = Digikey()
+    digikey.process(gui)
+    result: int = 0
     return result
 
 
 # url_load():
 @trace(1)
-def collection_get(collections, searches_root, gui, tracing=""):
-    # Verify argument types:
-    assert isinstance(collections, bom.Collections)
-    assert isinstance(searches_root, str)
-    assert isinstance(gui, bom.Gui)
-    assert isinstance(tracing, str)
-
-    # Create *collection*:
+def collection_get(collections: bom.Collections, searches_root: str, gui: bom.Gui,
+                   tracing: str = "") -> "DigikeyCollection":
     collection = DigikeyCollection(collections, searches_root, gui)
     return collection
 
@@ -85,27 +92,28 @@ class Digikey:
 
     # Digikey.__init__():
     @trace(1)
-    def __init__(self, tracing=""):
+    def __init__(self, tracing: str = "") -> None:
         # Extract the *digikey_package_directory* name:
         #  top_directory = "/home/wayne/public_html/projects/bom_digikey_plugin"
         digikey_py_file_name = __file__
         if tracing:
             print(f"{tracing}__file__='{__file__}'")
         assert digikey_py_file_name.endswith("digikey.py")
-        digikey_package_directory = os.path.split(digikey_py_file_name)[0]
-        init_py_file_name = os.path.join(digikey_package_directory, "__init__.py")
+        digikey_package_directory: str = os.path.split(digikey_py_file_name)[0]
+        init_py_file_name: str = os.path.join(digikey_package_directory, "__init__.py")
         if tracing:
             print(f"{tracing}digikey_py_file_name='{digikey_py_file_name}'")
             print(f"{tracing}digikey_package_directory='{digikey_package_directory}'")
-            print(f"{tracing}='init_py_file_name'{init_py_file_name}'")
+            print(f"{tracing}init_py_file_name='{init_py_file_name}'")
 
         # Compute the various needed directory and file names:
         assert os.path.isfile(init_py_file_name)
-        root_directory = os.path.join(digikey_package_directory, "ROOT")
-        csvs_directory = os.path.join(digikey_package_directory, "CSVS")
-        miscellaneous_directory = os.path.join(digikey_package_directory, "MISC")
-        products_html_file_name = os.path.join(miscellaneous_directory,
-                                               "www.digikey.com_products_en.html")
+        root_directory: str = os.path.join(digikey_package_directory, "ROOT")
+        # csvs_directory: str = os.path.join(digikey_package_directory, "CSVS")
+        csvs_directory: str = "/home/wayne/public_html/projects/bom_digikey_plugin/CSVS"
+        miscellaneous_directory: str = os.path.join(digikey_package_directory, "MISC")
+        products_html_file_name: str = os.path.join(miscellaneous_directory,
+                                                    "www.digikey.com_products_en.html")
         if tracing:
             print(f"{tracing}root_directory='{root_directory}'")
             print(f"{tracing}csvs_directory='{csvs_directory}'")
@@ -121,18 +129,16 @@ class Digikey:
             os.makedirs(csvs_directory)
 
         # Stuff various file names into *digikey* (i.e. *self*):
-        digikey = self
-        digikey.products_html_file_name = products_html_file_name
-        digikey.root_directory = root_directory
-        digikey.csvs_directory = csvs_directory
+        # digikey = self
+        self.products_html_file_name: str = products_html_file_name
+        self.root_directory: str = root_directory
+        self.csvs_directory: str = csvs_directory
 
     # Digikey.__str__():
     def __str__(self):
-        digikey = self
-        return f"Digikey('{digikey.name})"
+        return "Digikey()"
 
     # Digikey.collection_extract():
-    @trace(1)
     def collection_extract(self, hrefs_table, tracing=""):
         # Now we construct *collection* which is a *bom.Collection* that contains a list of
         # *DigkeyDirectory*'s (which are sub-classed from *bom.Directory*.  Each of those
@@ -204,11 +210,16 @@ class Digikey:
 
         # Grab some values from *digikey* (i.e. *self*):
         digikey = self
-        root_directory = digikey.root_directory
+        root_directory: str = digikey.root_directory
+        searches_root: str = ""
+        gui = bom.Gui()
 
         # Create the *collection* (*collections* is temporary and is not really used):
-        collections = bom.Collections("Collections", [], "", None)
-        collection = bom.Collection("Digi-Key", collections, root_directory, "", None)
+        collection_directories: List[str] = list()
+        partial_load: bool = False
+        collections = bom.Collections("Collections",
+                                      collection_directories, searches_root, partial_load, gui)
+        collection = bom.Collection("Digi-Key", collections, root_directory, searches_root, gui)
         # parent = collection
         assert collections.has_child(collection)
 
@@ -352,18 +363,16 @@ class Digikey:
 
     # Digikey.read_and_process():
     @trace(1)
-    def csvs_read_and_process(self, collection, tracing=""):
-        # Verify argument types:
-        assert isinstance(collection, bom.Collection)
-        assert isinstance(tracing, str)
-
+    def csvs_read_and_process(self, collection: bom.Collection, bind: bool, gui: bom.Gui,
+                              tracing: str = "") -> None:
         # Grab the *csvs_directory* from *digikey* (i.e. *self*):
-        digikey = self
-        csvs_directory = digikey.csvs_directory
+        digikey: Digikey = self
+        csvs_directory: DigikeyDirectory = digikey.csvs_directory
 
         # Fetch example `.csv` files for each table in *collection*:
+        directory: DigikeyDirectory
         for directory in collection.children_get():
-            directory.csv_read_and_process(csvs_directory)
+            directory.csv_read_and_process(csvs_directory, bind, gui)
 
     @staticmethod
     # Digikey.hrefs_table_show():
@@ -386,8 +395,8 @@ class Digikey:
             if index >= limit:
                 break
     # Digikey.process():
-    @trace(1)
-    def process(self, tracing=""):
+    @trace(0)
+    def process(self, gui: bom.Gui, tracing: str = "") -> None:
         # This starts with the top level page from Digi-Key.com:
         #
         #   https://www.digikey.com/products/en
@@ -416,13 +425,14 @@ class Digikey:
         digikey.collection_reorganize(collection)
 
         # Make sure we have an example `.csv` file for each table in *collection*:
+        print("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
         downloads_count = digikey.csvs_download(collection)
         if tracing:
             print(f"{tracing}downloads_count={downloads_count}")
 
         # Clear out the root directory and repoulate it with updated tables:
         digikey.root_directory_clear()
-        digikey.csvs_read_and_process(collection)
+        digikey.csvs_read_and_process(collection, True, gui)
 
     # Digikey.root_directory_clear():
     @trace(1)
@@ -464,8 +474,7 @@ class Digikey:
                     print("[{0}]: Keep '{1}'".format(file_name_index, file_name))
 
     # Digikey.soup_extract():
-    @trace(1)
-    def soup_extract(self, soup, tracing=""):
+    def soup_extract(self, soup: bs4.BeautifulSoup, tracing: str = "") -> List[Match]:
         # Now we use the *bs4* module to screen scrape the information we want from *soup*.
         # We are interested in sections of HTML that looks as follows:
         #
@@ -506,14 +515,12 @@ class Digikey:
         #
         # *id* is -1 if there was no "/*id*" present in the *href*.
 
-        # Verify argument types:
-        assert isinstance(soup, bs4.BeautifulSoup)
-        assert isinstance(tracing, str)
+        # print("  =>Digikey.soup_extract(...)")
 
         # Start with an empty *hrefs_table*:
-        hrefs_table = dict()
-        url_prefix = "/products/en/"
-        url_prefix_size = len(url_prefix)
+        hrefs_table: Dict[str, List[Match]] = dict()
+        url_prefix: str = "/products/en/"
+        url_prefix_size: int = len(url_prefix)
 
         # Find all of the <A HRef="..."> tags in *soup*:
         for a in soup.find_all("a"):
@@ -587,12 +594,12 @@ class Digikey:
                 matches.append(match)
         # We are done scraping information out of the the *soup*.  Everything we need is
         # now in *hrefs_table*.
+        # print("  <=Digikey.soup_extract(...)")
 
         return hrefs_table
 
     # Digikey.soup_read():
-    @trace(1)
-    def soup_read(self, tracing=""):
+    def soup_read(self, tracing: str = "") -> bs4.BeautifulSoup:
         # Read in the *digikey_product_html_file_name* file into *html_text*.  This
         # file is obtained by going to `https://www.digkey.com/` and clickd on the
         # `[View All]` link next to `Products`.  This page is saved from the web browser
@@ -602,24 +609,25 @@ class Digikey:
         assert isinstance(tracing, str)
 
         # Grab some values from *digikey* (i.e. *self*):
-        digikey = self
-        products_html_file_name = digikey.products_html_file_name
+        digikey: Digikey = self
+        products_html_file_name: str = digikey.products_html_file_name
 
         # Read *products_html_file_name* in and convert it into *soup*:
-        soup = None
+        html_file: IOBase
         with open(products_html_file_name) as html_file:
-            html_text = html_file.read()
+            html_text: str = html_file.read()
 
             # Parse *html_text* into a *soup*:
-            soup = bs4.BeautifulSoup(html_text, features="lxml")
+            soup: bs4.BeautifulSoup = bs4.BeautifulSoup(html_text, features="lxml")
 
             # To aid in reading the HTML, write the *soup* back out to the `/tmp` directory
             # in a prettified form:
-            prettified_html_file_name = "/tmp/prettified.html"
+            prettified_html_file_name: str = "/tmp/prettified.html"
             with open(prettified_html_file_name, "w") as html_file:
                 html_file.write(soup.prettify())
-        assert soup is not None
-        return soup
+            return soup
+
+        assert False
 
 
 # DigikeyCollection():
@@ -799,7 +807,6 @@ class DigikeyCollection(bom.Collection):
 class DigikeyDirectory(bom.Directory):
 
     # DigikeyDirectory.__init__():
-    @trace(1)
     def __init__(self, name, parent, id, url, tracing=""):
         # Verify argument types:
         assert isinstance(name, str)
@@ -818,17 +825,15 @@ class DigikeyDirectory(bom.Directory):
         digikey_directory.url = url
 
     def __str__(self):
-        digikey_directory = self
-        return f"DigikeyDirectory('{digikey_directory.name}')"
+        digikey_directory: DigikeyDirectory = self
+        name: str = "??"
+        if hasattr(digikey_directory, "name"):
+            name = digikey_directory.name
+        return f"DigikeyDirectory('{name}')"
 
     # DigikeyDirectory.csvs_download():
     @trace(1)
-    def csvs_download(self, csvs_directory, downloads_count, tracing=""):
-        # Verify argument types:
-        assert isinstance(csvs_directory, str)
-        assert isinstance(downloads_count, int)
-        assert isinstance(tracing, str)
-
+    def csvs_download(self, csvs_directory: str, downloads_count: int, tracing: str = "") -> int:
         # Grab some values from *digikey_directory* (i.e. *self*):
         digikey_directory = self
         children = digikey_directory.children_get()
@@ -839,16 +844,13 @@ class DigikeyDirectory(bom.Directory):
 
     # DigikeyDirectory.csv_read_and_process():
     @trace(1)
-    def csv_read_and_process(self, csvs_directory, bind=False, tracing=""):
-        # Verify argument types:
-        assert isinstance(csvs_directory, str)
-        assert isinstance(tracing, str)
-
+    def csv_read_and_process(self, csvs_directory: str, bind: bool, gui: bom.Gui,
+                             tracing: str = "") -> None:
         # Process each *sub_node* of *digikey_directory* (i.e. *self*):
         digikey_directory = self
         for sub_node in digikey_directory.children_get():
             assert isinstance(sub_node, bom.Node)
-            sub_node.csv_read_and_process(csvs_directory, bind=bind)
+            sub_node.csv_read_and_process(csvs_directory, bind, gui)
 
     # DigikeyDirectory.reorganize():
     @trace(1)
@@ -1038,46 +1040,38 @@ class DigikeyDirectory(bom.Directory):
 class DigikeyTable(bom.Table):
 
     # DigikeyTable.__init__():
-    @trace(1)
-    def __init__(self, name, parent, base, id, href, url, tracing=""):
-        # Verify argument types:
-        assert isinstance(name, str)
-        assert isinstance(parent, DigikeyDirectory)
-        assert isinstance(base, str)
-        assert isinstance(id, int)
-        assert isinstance(href, str)
-        assert isinstance(url, str)
-        assert isinstance(tracing, str)
-
-        # Initialize the parent *bom.Table* class for *digikey_table* (i.e. *self*):
-        digikey_table = self
+    def __init__(self, name: str, parent: DigikeyDirectory, base: str, id: int, href: str, url: str,
+                 tracing: str = "") -> None:
+        # Initialize the parent class:
         super().__init__(name, parent, url)
 
-        # Stuff values into *digikey_table*:
-        digikey_table.base = base
-        digikey_table.id = id
-        digikey_table.href = href
-        digikey_table.url = url
+        # Stuff values into *digikey_table* (i.e. *self*):
+        # digikey_table = self
+        self.base = base
+        self.id = id
+        self.href = href
+        self.url = url
 
     # DigikeyTable.__str__():
     def __str__(self):
-        digikey_table = self
-        return f"DigikeyTable('{digikey_table.name}')"
+        digikey_table: DigikeyTable = self
+        name: str = "??"
+        if hasattr(digikey_table, "name"):
+            name = digikey_table.name
+        return f"DigikeyTable('{name}')"
 
     # DigikeyTable.csvs_download():
     @trace(1)
-    def csvs_download(self, csvs_directory, downloads_count, tracing=""):
-        # Verify argument types:
-        assert isinstance(csvs_directory, str)
-        assert isinstance(downloads_count, int)
-        assert isinstance(tracing, str)
-
+    def csvs_download(self, csvs_directory: str, downloads_count: int, tracing: str = "") -> int:
         # Perform any requested *tracing* for *digikey_table* (i.e. *self*):
-        digikey_table = self
-        base = digikey_table.base
-        id = digikey_table.id
-        csv_file_name = csvs_directory + "/" + base + ".csv"
+        digikey_table: DigikeyTable = self
+        base: str = digikey_table.base
+        id: int = digikey_table.id
+        csv_file_name: str = csvs_directory + "/" + base + ".csv"
+        if tracing:
+            print(f"{tracing}csv_file_name='{csv_file_name}'")
         if not os.path.isfile(csv_file_name):
+
             # The first download happens immediately and the subsequent ones are delayed by
             # 60 seconds:
             if downloads_count >= 1:
@@ -1131,32 +1125,36 @@ class DigikeyTable(bom.Table):
         # Grab some values from *digikey_table* (i.e. *self*):
         digikey_table = self
         base = digikey_table.base
-        collection = digikey_table.collection
+        # collection = digikey_table.collection
 
         # Compute the *csv_full_name* and return it:
-        collection_root = collection.collection_root
-        csvs_root = os.path.join(collection_root, os.path.join("..", "CSVS"))
+        # collection_root: str = collection.collection_root
+        # csvs_root = os.path.join(collection_root, os.path.join("..", "CSVS"))
+        csvs_root: str = "/home/wayne/public_html/projects/bom_digikey_plugin/CSVS"
         csv_full_name = os.path.join(csvs_root, base + ".csv")
         return csv_full_name
 
     # DigikeyTable.file_save():
     @trace(1)
-    def file_save(self, tracing=""):
-        # Verify argument types:
-        assert isinstance(tracing, str)
+    def file_save(self, tracing: str = "") -> None:
+        digikey_table: DigikeyTable = self
+        if tracing:
+            comments: List[bom.TableComment] = digikey_table.comments
+            parameters: List[bom.Parameter] = digikey_table.parameters
+            print(f"{tracing}len(comments)={len(comments)}")
+            print(f"{tracing}len(parameters)={len(parameters)}")
 
         # Convert *digikey_table* (i.e. *self*) into a single *xml_text* string:
-        xml_lines = list()
-        digikey_table = self
+        xml_lines: List[str] = list()
         digikey_table.xml_lines_append(xml_lines, "")
         xml_lines.append("")
-        xml_text = '\n'.join(xml_lines)
+        xml_text: str = '\n'.join(xml_lines)
 
         # Compute the *xml_file_name*:
-        collection = digikey_table.collection
-        collection_root = collection.collection_root
-        relative_path = digikey_table.relative_path
-        xml_file_name = os.path.join(collection_root, relative_path + ".xml")
+        collection: bom.Collection = digikey_table.collection
+        collection_root: str = collection.collection_root
+        relative_path: str = digikey_table.relative_path
+        xml_file_name: str = os.path.join(collection_root, relative_path + ".xml")
         if tracing:
             print(f"{tracing}collection_root='{collection_root}'")
             print(f"{tracing}relative_path='{relative_path}'")
@@ -1164,8 +1162,10 @@ class DigikeyTable(bom.Table):
 
         # Write out *xml_text* to *xml_file_name*:
         digikey_table.directory_create(collection_root)
+        xml_file: IOBase
         with open(xml_file_name, "w") as xml_file:
             xml_file.write(xml_text)
+        # assert False, f"XML file '{xml_file_name}' written"
 
     # DigikeyTable.title_get():
     def title_get(self):
