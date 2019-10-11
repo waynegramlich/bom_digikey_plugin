@@ -732,18 +732,19 @@ class DigikeyCollection(bom.Collection):
                 input_tag: bs4.element.Tag
                 for index, input_tag in enumerate(form_tag.children):
                     # print(input_tag)
-                    assert input_tag.name.lower() == "input"
-                    input_name: str = input_tag.get("name")
-                    input_value: str = input_tag.get("value")
-                    input_value = input_value.replace(",", "%2C")
-                    input_value = input_value.replace('|', "%7C")
-                    input_value = input_value.replace(' ', "+")
-                    pair: str = f"{input_name}={input_value}"
-                    if tracing:
-                        print(f"{tracing}input_name='{input_name}'")
-                        print(f"{tracing}input_value='{input_value}'")
-                        print(f"{tracing}pair='{pair}'")
-                    pairs.append(pair)
+                    input_tag_name: Optional[str] = input_tag.name
+                    if isinstance(input_tag_name, str) and input_tag_name.lower() == "input":
+                        input_name: str = input_tag.get("name")
+                        input_value: str = input_tag.get("value")
+                        input_value = input_value.replace(",", "%2C")
+                        input_value = input_value.replace('|', "%7C")
+                        input_value = input_value.replace(' ', "+")
+                        pair: str = f"{input_name}={input_value}"
+                        if tracing:
+                            print(f"{tracing}input_name='{input_name}'")
+                            print(f"{tracing}input_value='{input_value}'")
+                            print(f"{tracing}pair='{pair}'")
+                        pairs.append(pair)
                 pairs_text = '&'.join(pairs)
                 if tracing:
                     print(f"{tracing}pairs_text='{pairs_text}'")
@@ -807,6 +808,12 @@ class DigikeyCollection(bom.Collection):
         # Wrap up any requested *tracing* and return *result*;
         result: bool = True
         return result
+
+    # DigikeyCollection.panel_update():
+    @trace(1)
+    def panel_update(self, gui: bom.Gui, tracing: str = "") -> None:
+        digikey_collection: DigikeyCollection = self
+        gui.collection_panel_update(digikey_collection)
 
 
 # DigikeyDirectory:
