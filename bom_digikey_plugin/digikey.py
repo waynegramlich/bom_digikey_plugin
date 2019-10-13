@@ -49,7 +49,7 @@
 
 from argparse import ArgumentParser
 from bom_manager import bom
-from bom_manager.tracing import trace, trace_level_set
+from bom_manager.tracing import trace, trace_level_set, tracing_get
 import bs4   # type: ignore
 import glob
 import os
@@ -60,7 +60,7 @@ Match = Tuple[str, str, int, str, str, str]
 
 
 # main():
-def main(tracing: str = "") -> int:
+def main() -> int:
     # Create the *digikey* object and process it:
 
     # Parse the command line:
@@ -81,8 +81,8 @@ def main(tracing: str = "") -> int:
 # Is this used any more??!!!
 # url_load():
 @trace(1)
-def collection_get(collections: bom.Collections, searches_root: str, gui: bom.Gui,
-                   tracing: str = "") -> "DigikeyCollection":
+def collection_get(collections: bom.Collections, searches_root: str,
+                   gui: bom.Gui) -> "DigikeyCollection":
     digikey_collection: DigikeyCollection = DigikeyCollection(collections, searches_root, gui)
     return digikey_collection
 
@@ -92,10 +92,11 @@ class Digikey:
 
     # Digikey.__init__():
     @trace(1)
-    def __init__(self, tracing: str = "") -> None:
+    def __init__(self) -> None:
         # Extract the *digikey_package_directory* name:
         #  top_directory = "/home/wayne/public_html/projects/bom_digikey_plugin"
         digikey_py_file_name = __file__
+        tracing: str = tracing_get()
         if tracing:
             print(f"{tracing}__file__='{__file__}'")
         assert digikey_py_file_name.endswith("digikey.py")
@@ -139,8 +140,7 @@ class Digikey:
         return "Digikey()"
 
     # Digikey.collection_extract():
-    def collection_extract(self, hrefs_table: Dict[str, List[Match]],
-                           tracing: str = "") -> bom.Collection:
+    def collection_extract(self, hrefs_table: Dict[str, List[Match]]) -> bom.Collection:
         # Now we construct *collection* which is a *bom.Collection* that contains a list of
         # *DigkeyDirectory*'s (which are sub-classed from *bom.Directory*.  Each of those
         # nested *DigikeyDirectory*'s contains a further list of *DigikeyTable*'s.
@@ -229,6 +229,7 @@ class Digikey:
         current_directory: Optional[DigikeyDirectory] = None
         href_index: int
         hrefs_key: str
+        tracing: str = tracing_get()
         for href_index, hrefs_key in hrefs_table_keys:
             matches: List[Match] = hrefs_table[hrefs_key]
             if tracing:
@@ -286,10 +287,9 @@ class Digikey:
 
     # Digikey.collection_reorganize():
     @trace(1)
-    def collection_reorganize(self, collection: bom.Collection, tracing: str = "") -> None:
+    def collection_reorganize(self, collection: bom.Collection) -> None:
         # Verify argument types:
         assert isinstance(collection, bom.Collection)
-        assert isinstance(tracing, str)
 
         # Extract a sorted list of *directories* from *collection*:
         directories: List[bom.Node] = collection.children_get()
@@ -298,6 +298,7 @@ class Digikey:
         # print("len(directories)={0}".format(len(directories)))
         directory_index: int
         directory: bom.Node
+        tracing: str = tracing_get()
         for directory_index, directory in enumerate(directories):
             assert isinstance(directory, DigikeyDirectory)
             if tracing:
@@ -307,7 +308,7 @@ class Digikey:
     # Digikey.collection_verify():
     @trace(1)
     def collection_verify(self, digikey_collection: bom.Collection,
-                          hrefs_table: Dict[str, List[Match]], tracing: str = "") -> None:
+                          hrefs_table: Dict[str, List[Match]]) -> None:
         # For testing only, grab all of the *directories* and *tables* from *root_directory*,
         # count them up, and validate that the sizes all match:
         directories: List[bom.Directory] = digikey_collection.directories_get()
@@ -317,6 +318,7 @@ class Digikey:
         hrefs_table_size: int = len(hrefs_table)
 
         # Verify that we did not loose anything during extraction:
+        tracing: str = tracing_get()
         if tracing:
             print(f"{tracing}directories_size={directories_size}")
             print(f"{tracing}tables_size={tables_size}")
@@ -372,8 +374,7 @@ class Digikey:
 
     # Digikey.read_and_process():
     @trace(1)
-    def csvs_read_and_process(self, collection: bom.Collection, bind: bool, gui: bom.Gui,
-                              tracing: str = "") -> None:
+    def csvs_read_and_process(self, collection: bom.Collection, bind: bool, gui: bom.Gui) -> None:
         # Grab the *csvs_directory* from *digikey* (i.e. *self*):
         digikey: Digikey = self
         csvs_directory: str = digikey.csvs_directory
@@ -386,12 +387,12 @@ class Digikey:
 
     @staticmethod
     # Digikey.hrefs_table_show():
-    def hrefs_table_show(hrefs_table: Dict[str, List[Match]], limit: int,
-                         tracing: str = "") -> None:
+    def hrefs_table_show(hrefs_table: Dict[str, List[Match]], limit: int) -> None:
         # Iterate over a sorted *hrefs_table_keys*:
         hrefs_table_keys: List[str] = sorted(hrefs_table.keys())
         index: int
         hrefs_table_key: str
+        tracing: str = tracing_get()
         for index, hrefs_table_key in enumerate(hrefs_table_keys):
             matches: List[Match] = hrefs_table[hrefs_table_key]
             print(f"{tracing}HRef[{index}]:key='{hrefs_table_key}'")
@@ -414,7 +415,7 @@ class Digikey:
 
     # Digikey.process():
     @trace(0)
-    def process(self, gui: bom.Gui, tracing: str = "") -> None:
+    def process(self, gui: bom.Gui) -> None:
         # This starts with the top level page from Digi-Key.com:
         #
         #   https://www.digikey.com/products/en
@@ -438,6 +439,7 @@ class Digikey:
         digikey.collection_reorganize(collection)
 
         # Make sure we have an example `.csv` file for each table in *collection*:
+        tracing: str = tracing_get()
         print(f"{tracing}&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
         downloads_count: int = digikey.csvs_download(collection)
         if tracing:
@@ -449,7 +451,7 @@ class Digikey:
 
     # Digikey.root_directory_clear():
     @trace(1)
-    def root_directory_clear(self, tracing: str = "") -> None:
+    def root_directory_clear(self) -> None:
         # Scan the *root_directory* of *digikey* (i.e. *self*) for all sub files and directories:
         digikey: Digikey = self
         root_directory: str = digikey.root_directory
@@ -461,6 +463,7 @@ class Digikey:
         # Visit each *file_name* in *file_names* and delete them (if appropriate):
         file_name_index: int
         file_name: str
+        tracing: str = tracing_get()
         for file_name_index, file_name in enumerate(file_names):
             # Hang onto the `README.md` and the top level directory (i.e. *file_name[:-1]*):
             delete: bool = not (file_name.endswith("README.md") or file_name[:-1] == root_directory)
@@ -483,7 +486,7 @@ class Digikey:
                     print(f"{tracing}[{file_name_index}]: Keep '{file_name}'")
 
     # Digikey.soup_extract():
-    def soup_extract(self, soup: bs4.BeautifulSoup, tracing: str = "") -> Dict[str, List[Match]]:
+    def soup_extract(self, soup: bs4.BeautifulSoup) -> Dict[str, List[Match]]:
         # Now we use the *bs4* module to screen scrape the information we want from *soup*.
         # We are interested in sections of HTML that looks as follows:
         #
@@ -613,7 +616,7 @@ class Digikey:
         return hrefs_table
 
     # Digikey.soup_read():
-    def soup_read(self, tracing: str = "") -> bs4.BeautifulSoup:
+    def soup_read(self) -> bs4.BeautifulSoup:
         # Read in the *digikey_product_html_file_name* file into *html_text*.  This
         # file is obtained by going to `https://www.digkey.com/` and clickd on the
         # `[View All]` link next to `Products`.  This page is saved from the web browser
@@ -646,14 +649,14 @@ class DigikeyCollection(bom.Collection):
 
     # DigikeyCollection.__init__():
     @trace(1)
-    def __init__(self, collections: bom.Collections, searches_root: str, gui: bom.Gui,
-                 tracing: str = "") -> None:
+    def __init__(self, collections: bom.Collections, searches_root: str, gui: bom.Gui) -> None:
         # Compute the path to the *collection_root*:
         digikey_py_file_path: str = __file__
         digikey_directory: str
         digikey_py: str
         digikey_directory, digikey_py = os.path.split(digikey_py_file_path)
         collection_root: str = os.path.join(digikey_directory, "ROOT")
+        tracing: str = tracing_get()
         if tracing:
             print(f"{tracing}digikey_py_file_path=>'{digikey_py_file_path}'")
             print(f"{tracing}digikey_directory='{digikey_directory}'")
@@ -672,7 +675,7 @@ class DigikeyCollection(bom.Collection):
 
     # DigikeyCollection.csv_fetch():
     @trace(1)
-    def csv_fetch(self, search_url: str, csv_file_name: str, tracing: str = "") -> bool:
+    def csv_fetch(self, search_url: str, csv_file_name: str) -> bool:
         # Construct the header values that need to be sent with the *search_url*:
         authority_text: str = "www.digikey.com"
         accept_text: str = (
@@ -716,6 +719,7 @@ class DigikeyCollection(bom.Collection):
 
         soup: Optional[bs4.BeautifulSoup] = bs4.BeautifulSoup(html_text, features="lxml")
         assert soup is not None
+        tracing: str = tracing_get()
         # print(f"{tracing}type(soup)=", type(soup))
         pairs: List[str] = []
         pairs_text: Optional[str] = None
@@ -811,7 +815,7 @@ class DigikeyCollection(bom.Collection):
 
     # DigikeyCollection.panel_update():
     @trace(1)
-    def panel_update(self, gui: bom.Gui, tracing: str = "") -> None:
+    def panel_update(self, gui: bom.Gui) -> None:
         digikey_collection: DigikeyCollection = self
         gui.collection_panel_update(digikey_collection)
 
@@ -821,7 +825,7 @@ class DigikeyDirectory(bom.Directory):
 
     # DigikeyDirectory.__init__():
     def __init__(self, name: str, parent: "Union[bom.Collection, DigikeyDirectory]",
-                 id: int, url: str, tracing: str = "") -> None:
+                 id: int, url: str) -> None:
         # Initialize the parent class for *digikey_directory* (i.e. *self*):
         super().__init__(name, parent)
 
@@ -840,7 +844,7 @@ class DigikeyDirectory(bom.Directory):
 
     # DigikeyDirectory.csvs_download():
     @trace(1)
-    def csvs_download(self, csvs_directory: str, downloads_count: int, tracing: str = "") -> int:
+    def csvs_download(self, csvs_directory: str, downloads_count: int) -> int:
         # Grab some values from *digikey_directory* (i.e. *self*):
         digikey_directory: DigikeyDirectory = self
         children: List[bom.Node] = digikey_directory.children_get()
@@ -851,8 +855,7 @@ class DigikeyDirectory(bom.Directory):
 
     # DigikeyDirectory.csv_read_and_process():
     @trace(1)
-    def csv_read_and_process(self, csvs_directory: str, bind: bool, gui: bom.Gui,
-                             tracing: str = "") -> None:
+    def csv_read_and_process(self, csvs_directory: str, bind: bool, gui: bom.Gui) -> None:
         # Process each *sub_node* of *digikey_directory* (i.e. *self*):
         digikey_directory: DigikeyDirectory = self
         sub_node: bom.Node
@@ -862,7 +865,7 @@ class DigikeyDirectory(bom.Directory):
 
     # DigikeyDirectory.reorganize():
     @trace(1)
-    def reorganize(self, tracing: str = "") -> None:
+    def reorganize(self) -> None:
         # This lovely piece of code takes a *DigikeyDirectory* (i.e. *self*) and attempts
         # to further partition it into some smaller directories.
 
@@ -909,6 +912,7 @@ class DigikeyDirectory(bom.Directory):
         table_index: int
         table: bom.Node
         tables_list: List[bom.Table]
+        tracing: str = tracing_get()
         for table_index, table in enumerate(children):
             # Grab some values from *table*:
             assert isinstance(table, DigikeyTable)
@@ -1049,8 +1053,8 @@ class DigikeyDirectory(bom.Directory):
 class DigikeyTable(bom.Table):
 
     # DigikeyTable.__init__():
-    def __init__(self, name: str, parent: DigikeyDirectory, base: str, id: int, href: str, url: str,
-                 tracing: str = "") -> None:
+    def __init__(self, name: str, parent: DigikeyDirectory, base: str, id: int,
+                 href: str, url: str,) -> None:
         # Initialize the parent class:
         super().__init__(name, parent, url)
 
@@ -1071,12 +1075,12 @@ class DigikeyTable(bom.Table):
 
     # DigikeyTable.csvs_download():
     @trace(1)
-    def csvs_download(self, csvs_directory: str, downloads_count: int, tracing: str = "") -> int:
-        # Perform any requested *tracing* for *digikey_table* (i.e. *self*):
+    def csvs_download(self, csvs_directory: str, downloads_count: int) -> int:
         digikey_table: DigikeyTable = self
         base: str = digikey_table.base
         id: int = digikey_table.id
         csv_file_name: str = csvs_directory + "/" + base + ".csv"
+        tracing: str = tracing_get()
         if tracing:
             print(f"{tracing}csv_file_name='{csv_file_name}'")
         if not os.path.isfile(csv_file_name):
@@ -1130,7 +1134,7 @@ class DigikeyTable(bom.Table):
 
     # DigikeyTable.csv_full_name_get():
     @trace(1)
-    def csv_full_name_get(self, tracing: str = "") -> str:
+    def csv_full_name_get(self) -> str:
         # Grab some values from *digikey_table* (i.e. *self*):
         digikey_table = self
         base: str = digikey_table.base
@@ -1145,8 +1149,9 @@ class DigikeyTable(bom.Table):
 
     # DigikeyTable.file_save():
     @trace(1)
-    def file_save(self, tracing: str = "") -> None:
+    def file_save(self) -> None:
         digikey_table: DigikeyTable = self
+        tracing: str = tracing_get()
         if tracing:
             comments: List[bom.TableComment] = digikey_table.comments
             parameters: List[bom.Parameter] = digikey_table.parameters
@@ -1184,7 +1189,7 @@ class DigikeyTable(bom.Table):
         return digikey_table.file_name2title()
 
     # DigikeyTable.xml_lines_append():
-    def xml_lines_append(self, xml_lines: List[str], indent: str, tracing: str = "") -> None:
+    def xml_lines_append(self, xml_lines: List[str], indent: str) -> None:
         # Grab some values from *digikey_table* (i.e. *self*):
         digikey_table: DigikeyTable = self
         name: str = digikey_table.name
