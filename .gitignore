@@ -1,4 +1,5 @@
 *~
+*.pyl
 *.egg-info/
 CSVS
 build/
