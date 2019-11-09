@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<Table name="Protection Relays &amp; Systems" url="https://www.digikey.com/products/en/industrial-automation-and-controls/protection-relays-systems/810" nonce="810" base="industrial-automation-and-controls-protection-relays-systems">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="Empty"/>
+  <Parameter name="Image" index="1" type_name="Empty"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="List"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Series" index="11" type_name="String"/>
+  <Parameter name="Part Status" index="12" type_name="String"/>
+  <Parameter name="Function" index="13" type_name="Empty"/>
+  <Parameter name="Voltage - Supply" index="14" type_name="Empty"/>
+  <Parameter name="Trip Range" index="15" type_name="Empty"/>
+  <Parameter name="Delay Time" index="16" type_name="Empty"/>
+  <Parameter name="Mounting Type" index="17" type_name="Empty"/>
+  <Parameter name="Termination Style" index="18" type_name="Empty"/>
+  <Parameter name="Features" index="19" type_name="Empty"/>
+  <Parameter name="Operating Temperature" index="20" type_name="Empty"/>
+</Table>

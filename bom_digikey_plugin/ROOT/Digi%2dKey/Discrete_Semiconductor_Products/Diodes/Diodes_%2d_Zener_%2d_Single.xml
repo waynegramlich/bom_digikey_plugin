@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<Table name="Diodes - Zener - Single" url="https://www.digikey.com/products/en/discrete-semiconductor-products/transistors-bipolar-bjt-single-pre-biased/292" nonce="292" base="discrete-semiconductor-products-transistors-bipolar-bjt-single-pre-biased">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Packaging" index="11" type_name="String"/>
+  <Parameter name="Series" index="12" type_name="Empty"/>
+  <Parameter name="Part Status" index="13" type_name="String"/>
+  <Parameter name="Transistor Type" index="14" type_name="String"/>
+  <Parameter name="Current - Collector (Ic) (Max)" index="15" type_name="String"/>
+  <Parameter name="Voltage - Collector Emitter Breakdown (Max)" index="16" type_name="IUnits"/>
+  <Parameter name="Resistor - Base (R1)" index="17" type_name="IUnits"/>
+  <Parameter name="Resistor - Emitter Base (R2)" index="18" type_name="IUnits"/>
+  <Parameter name="DC Current Gain (hFE) (Min) @ Ic, Vce" index="19" type_name="List"/>
+  <Parameter name="Vce Saturation (Max) @ Ib, Ic" index="20" type_name="List"/>
+  <Parameter name="Current - Collector Cutoff (Max)" index="21" type_name="IUnits"/>
+  <Parameter name="Frequency - Transition" index="22" type_name="IUnits"/>
+  <Parameter name="Power - Max" index="23" type_name="String"/>
+  <Parameter name="Mounting Type" index="24" type_name="String"/>
+  <Parameter name="Package / Case" index="25" type_name="List"/>
+  <Parameter name="Supplier Device Package" index="26" type_name="String"/>
+</Table>

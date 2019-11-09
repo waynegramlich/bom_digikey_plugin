@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<Table name="LED Indication - Discrete" url="https://www.digikey.com/products/en/optoelectronics/led-indication-discrete/105" nonce="105" base="optoelectronics-led-indication-discrete">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Packaging" index="11" type_name="String"/>
+  <Parameter name="Series" index="12" type_name="Empty"/>
+  <Parameter name="Part Status" index="13" type_name="String"/>
+  <Parameter name="Color" index="14" type_name="String"/>
+  <Parameter name="Configuration" index="15" type_name="String"/>
+  <Parameter name="Lens Color" index="16" type_name="String"/>
+  <Parameter name="Lens Transparency" index="17" type_name="String"/>
+  <Parameter name="Millicandela Rating" index="18" type_name="String"/>
+  <Parameter name="Lens Style" index="19" type_name="String"/>
+  <Parameter name="Lens Size" index="20" type_name="String"/>
+  <Parameter name="Voltage - Forward (Vf) (Typ)" index="21" type_name="FUnits"/>
+  <Parameter name="Current - Test" index="22" type_name="String"/>
+  <Parameter name="Viewing Angle" index="23" type_name="String"/>
+  <Parameter name="Mounting Type" index="24" type_name="String"/>
+  <Parameter name="Wavelength - Dominant" index="25" type_name="IUnits"/>
+  <Parameter name="Wavelength - Peak" index="26" type_name="IUnits"/>
+  <Parameter name="Features" index="27" type_name="Empty"/>
+  <Parameter name="Package / Case" index="28" type_name="String"/>
+  <Parameter name="Supplier Device Package" index="29" type_name="String"/>
+  <Parameter name="Size / Dimension" index="30" type_name="String"/>
+  <Parameter name="Height (Max)" index="31" type_name="String"/>
+</Table>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<Table name="Single Conductor Cables (Hook-Up Wire)" url="https://www.digikey.com/products/en/cables-wires/single-conductor-cables-hook-up-wire/474" nonce="474" base="cables-wires-single-conductor-cables-hook-up-wire">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Series" index="11" type_name="Empty"/>
+  <Parameter name="Part Status" index="12" type_name="String"/>
+  <Parameter name="Cable Type" index="13" type_name="String"/>
+  <Parameter name="Wire Gauge" index="14" type_name="String"/>
+  <Parameter name="Conductor Strand" index="15" type_name="String"/>
+  <Parameter name="Conductor Material" index="16" type_name="List"/>
+  <Parameter name="Jacket (Insulation) Material" index="17" type_name="String"/>
+  <Parameter name="Jacket (Insulation) Diameter" index="18" type_name="String"/>
+  <Parameter name="Jacket (Insulation) Thickness" index="19" type_name="String"/>
+  <Parameter name="Length" index="20" type_name="String"/>
+  <Parameter name="Voltage" index="21" type_name="IUnits"/>
+  <Parameter name="Operating Temperature" index="22" type_name="Range"/>
+  <Parameter name="Jacket Color" index="23" type_name="String"/>
+  <Parameter name="Ratings" index="24" type_name="String"/>
+  <Parameter name="Features" index="25" type_name="Empty"/>
+</Table>

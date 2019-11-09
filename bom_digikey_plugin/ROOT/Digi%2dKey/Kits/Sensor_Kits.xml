@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Table name="Sensor Kits" url="https://www.digikey.com/products/en/kits/sensor-kits/662" nonce="662" base="kits-sensor-kits">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="Empty"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Packaging" index="11" type_name="Empty"/>
+  <Parameter name="Series" index="12" type_name="Empty"/>
+  <Parameter name="Part Status" index="13" type_name="String"/>
+  <Parameter name="Kit Type" index="14" type_name="Empty"/>
+  <Parameter name="Quantity" index="15" type_name="Empty"/>
+</Table>

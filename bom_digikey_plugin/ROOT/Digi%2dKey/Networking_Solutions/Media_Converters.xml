@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<Table name="Media Converters" url="https://www.digikey.com/products/en/networking-solutions/media-converters/929" nonce="929" base="networking-solutions-media-converters">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="List"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Packaging" index="11" type_name="String"/>
+  <Parameter name="Series" index="12" type_name="String"/>
+  <Parameter name="Part Status" index="13" type_name="String"/>
+  <Parameter name="Type" index="14" type_name="Empty"/>
+  <Parameter name="Configuration" index="15" type_name="String"/>
+  <Parameter name="Copper Ports" index="16" type_name="Integer"/>
+  <Parameter name="Copper Type" index="17" type_name="String"/>
+  <Parameter name="Fiber Ports" index="18" type_name="Integer"/>
+  <Parameter name="Fiber Type" index="19" type_name="String"/>
+  <Parameter name="SFP/XFP Ports" index="20" type_name="Empty"/>
+  <Parameter name="Features" index="21" type_name="Empty"/>
+  <Parameter name="Distance" index="22" type_name="IUnits"/>
+  <Parameter name="MTU" index="23" type_name="Empty"/>
+  <Parameter name="Voltage - Input" index="24" type_name="Range"/>
+  <Parameter name="Connector Type" index="25" type_name="List"/>
+  <Parameter name="Mounting Type" index="26" type_name="String"/>
+  <Parameter name="Ingress Protection" index="27" type_name="Empty"/>
+  <Parameter name="Operating Temperature" index="28" type_name="Range"/>
+</Table>

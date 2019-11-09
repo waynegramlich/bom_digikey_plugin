@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<Table name="Speakers" url="https://www.digikey.com/products/en/audio-products/speakers/156" nonce="156" base="audio-products-speakers">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Packaging" index="11" type_name="String"/>
+  <Parameter name="Series" index="12" type_name="String"/>
+  <Parameter name="Part Status" index="13" type_name="String"/>
+  <Parameter name="Technology" index="14" type_name="String"/>
+  <Parameter name="Type" index="15" type_name="String"/>
+  <Parameter name="Frequency Range" index="16" type_name="Range"/>
+  <Parameter name="Frequency - Self Resonant" index="17" type_name="IUnits"/>
+  <Parameter name="Impedance" index="18" type_name="IUnits"/>
+  <Parameter name="Efficiency - dBA" index="19" type_name="Float"/>
+  <Parameter name="Efficiency - Testing" index="20" type_name="String"/>
+  <Parameter name="Efficiency - Type" index="21" type_name="String"/>
+  <Parameter name="Power - Rated" index="22" type_name="IUnits"/>
+  <Parameter name="Power - Max" index="23" type_name="IUnits"/>
+  <Parameter name="Port Location" index="24" type_name="String"/>
+  <Parameter name="Shape" index="25" type_name="String"/>
+  <Parameter name="Material - Cone" index="26" type_name="List"/>
+  <Parameter name="Material - Magnet" index="27" type_name="String"/>
+  <Parameter name="Ingress Protection" index="28" type_name="Empty"/>
+  <Parameter name="Ratings" index="29" type_name="Empty"/>
+  <Parameter name="Termination" index="30" type_name="String"/>
+  <Parameter name="Size / Dimension" index="31" type_name="String"/>
+  <Parameter name="Height - Seated (Max)" index="32" type_name="String"/>
+</Table>

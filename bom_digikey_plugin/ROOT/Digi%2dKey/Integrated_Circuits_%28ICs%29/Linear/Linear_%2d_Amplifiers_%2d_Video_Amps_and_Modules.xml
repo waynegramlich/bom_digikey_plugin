@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<Table name="Linear - Amplifiers - Video Amps and Modules" url="https://www.digikey.com/products/en/integrated-circuits-ics/specialized-ics/686" nonce="686" base="integrated-circuits-ics-specialized-ics">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Packaging" index="11" type_name="String"/>
+  <Parameter name="Series" index="12" type_name="Empty"/>
+  <Parameter name="Part Status" index="13" type_name="String"/>
+  <Parameter name="Type" index="14" type_name="String"/>
+  <Parameter name="Applications" index="15" type_name="String"/>
+  <Parameter name="Mounting Type" index="16" type_name="String"/>
+  <Parameter name="Package / Case" index="17" type_name="List"/>
+  <Parameter name="Supplier Device Package" index="18" type_name="String"/>
+</Table>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<Table name="Heat Shrink Boots, Caps" url="https://www.digikey.com/products/en/cables-wires-management/heat-shrink-boots-caps/499" nonce="499" base="cables-wires-management-heat-shrink-boots-caps">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="List"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Series" index="11" type_name="String"/>
+  <Parameter name="Part Status" index="12" type_name="String"/>
+  <Parameter name="Type" index="13" type_name="String"/>
+  <Parameter name="Shell Size - Insert" index="14" type_name="Integer"/>
+  <Parameter name="Features" index="15" type_name="List"/>
+  <Parameter name="Color" index="16" type_name="String"/>
+  <Parameter name="Material" index="17" type_name="List"/>
+  <Parameter name="Large Diameter Supplied" index="18" type_name="String"/>
+  <Parameter name="Large Diameter Recovered" index="19" type_name="String"/>
+  <Parameter name="Small Diameter Supplied" index="20" type_name="String"/>
+  <Parameter name="Small Diameter Recovered" index="21" type_name="String"/>
+  <Parameter name="Large Recovered Length" index="22" type_name="String"/>
+  <Parameter name="Small Recovered Length" index="23" type_name="String"/>
+  <Parameter name="Total Length Supplied" index="24" type_name="Empty"/>
+  <Parameter name="Total Length Recovered" index="25" type_name="String"/>
+</Table>

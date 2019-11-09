@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<Table name="Magnetic, Reed Switches" url="https://www.digikey.com/products/en/switches/magnetic-reed-switches/193" nonce="193" base="switches-magnetic-reed-switches">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Packaging" index="11" type_name="String"/>
+  <Parameter name="Series" index="12" type_name="String"/>
+  <Parameter name="Part Status" index="13" type_name="String"/>
+  <Parameter name="Type" index="14" type_name="String"/>
+  <Parameter name="Circuit" index="15" type_name="String"/>
+  <Parameter name="Operate Range" index="16" type_name="Range"/>
+  <Parameter name="Release Range" index="17" type_name="Empty"/>
+  <Parameter name="Current - Switching" index="18" type_name="String"/>
+  <Parameter name="Voltage - Switching AC" index="19" type_name="IUnits"/>
+  <Parameter name="Voltage - Switching DC" index="20" type_name="IUnits"/>
+  <Parameter name="Power - Rated" index="21" type_name="IUnits"/>
+  <Parameter name="Operate Time" index="22" type_name="String"/>
+  <Parameter name="Release Time" index="23" type_name="String"/>
+  <Parameter name="Mounting Type" index="24" type_name="String"/>
+  <Parameter name="Termination Style" index="25" type_name="String"/>
+  <Parameter name="Length - Overall" index="26" type_name="String"/>
+  <Parameter name="Size - Body" index="27" type_name="String"/>
+  <Parameter name="Height Above Board" index="28" type_name="Empty"/>
+  <Parameter name="Operating Temperature" index="29" type_name="Range"/>
+  <Parameter name="Capacitance" index="30" type_name="FUnits"/>
+  <Parameter name="Current - Carry" index="31" type_name="String"/>
+</Table>

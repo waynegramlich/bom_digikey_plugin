@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<Table name="Battery Holders, Clips, Contacts" url="https://www.digikey.com/products/en/battery-products/battery-holders-clips-contacts/86" nonce="86" base="battery-products-battery-holders-clips-contacts">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Series" index="11" type_name="Empty"/>
+  <Parameter name="Part Status" index="12" type_name="String"/>
+  <Parameter name="Battery Type, Function" index="13" type_name="List"/>
+  <Parameter name="Style" index="14" type_name="String"/>
+  <Parameter name="Battery Cell Size" index="15" type_name="List"/>
+  <Parameter name="Number of Cells" index="16" type_name="Integer"/>
+  <Parameter name="Battery Series" index="17" type_name="Empty"/>
+  <Parameter name="Mounting Type" index="18" type_name="List"/>
+  <Parameter name="Termination Style" index="19" type_name="String"/>
+  <Parameter name="Height Above Board" index="20" type_name="String"/>
+  <Parameter name="Operating Temperature" index="21" type_name="Empty"/>
+</Table>

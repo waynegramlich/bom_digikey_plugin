@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<Table name="Thermal - Accessories" url="https://www.digikey.com/products/en/fans-thermal-management/thermal-thermoelectric-peltier-modules/222" nonce="222" base="fans-thermal-management-thermal-thermoelectric-peltier-modules">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="List"/>
+  <Parameter name="Description" index="5" type_name="List"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Series" index="11" type_name="String"/>
+  <Parameter name="Part Status" index="12" type_name="String"/>
+  <Parameter name="Outline L x W x H" index="13" type_name="String"/>
+  <Parameter name="Qmax @ Th" index="14" type_name="String"/>
+  <Parameter name="Delta Tmax @ Th" index="15" type_name="String"/>
+  <Parameter name="Current - Max" index="16" type_name="FUnits"/>
+  <Parameter name="Voltage - Max" index="17" type_name="FUnits"/>
+  <Parameter name="Resistance" index="18" type_name="FUnits"/>
+  <Parameter name="Operating Temperature" index="19" type_name="IUnits"/>
+  <Parameter name="Features" index="20" type_name="List"/>
+</Table>

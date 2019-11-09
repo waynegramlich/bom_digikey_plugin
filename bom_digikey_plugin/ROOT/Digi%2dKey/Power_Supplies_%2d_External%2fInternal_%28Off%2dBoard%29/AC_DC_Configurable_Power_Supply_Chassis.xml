@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Table name="AC DC Configurable Power Supply Chassis" url="https://www.digikey.com/products/en/power-supplies-external-internal-off-board/ac-dc-configurable-power-supply-chassis/134" nonce="134" base="power-supplies-external-internal-off-board-ac-dc-configurable-power-supply-chassis">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Series" index="11" type_name="List"/>
+  <Parameter name="Part Status" index="12" type_name="String"/>
+  <Parameter name="User Configuration" index="13" type_name="String"/>
+  <Parameter name="Type" index="14" type_name="String"/>
+  <Parameter name="Number of Positions" index="15" type_name="Integer"/>
+  <Parameter name="Voltage - Input" index="16" type_name="Range"/>
+  <Parameter name="Power (Watts)" index="17" type_name="IUnits"/>
+  <Parameter name="Voltage - Isolation" index="18" type_name="IUnits"/>
+  <Parameter name="Efficiency" index="19" type_name="String"/>
+  <Parameter name="Features" index="20" type_name="Empty"/>
+  <Parameter name="Operating Temperature" index="21" type_name="Range"/>
+  <Parameter name="Size / Dimension" index="22" type_name="String"/>
+  <Parameter name="Height" index="23" type_name="String"/>
+</Table>

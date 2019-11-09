@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<Table name="Card Edge Connectors - Contacts" url="https://www.digikey.com/products/en/connectors-interconnects/terminal-blocks-din-rail-channel/369" nonce="369" base="connectors-interconnects-terminal-blocks-din-rail-channel">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="Integer"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Series" index="11" type_name="String"/>
+  <Parameter name="Part Status" index="12" type_name="String"/>
+  <Parameter name="Type" index="13" type_name="String"/>
+  <Parameter name="Disconnect Type" index="14" type_name="Empty"/>
+  <Parameter name="Number of Positions" index="15" type_name="Integer"/>
+  <Parameter name="Number of Levels" index="16" type_name="Integer"/>
+  <Parameter name="Terminal - Width" index="17" type_name="String"/>
+  <Parameter name="Termination Style" index="18" type_name="String"/>
+  <Parameter name="Current - IEC" index="19" type_name="IUnits"/>
+  <Parameter name="Voltage - IEC" index="20" type_name="IUnits"/>
+  <Parameter name="Current - UL" index="21" type_name="IUnits"/>
+  <Parameter name="Voltage - UL" index="22" type_name="IUnits"/>
+  <Parameter name="Wire Gauge or Range - AWG" index="23" type_name="String"/>
+  <Parameter name="Wire Gauge or Range - mm&#178;" index="24" type_name="String"/>
+  <Parameter name="Features" index="25" type_name="Empty"/>
+  <Parameter name="Color" index="26" type_name="String"/>
+  <Parameter name="Fuse Type" index="27" type_name="Empty"/>
+</Table>

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Table name="Current Sensors" url="https://www.digikey.com/products/en/sensors-transducers/current-sensors/525" nonce="525" base="sensors-transducers-current-sensors">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="List"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Packaging" index="11" type_name="String"/>
+  <Parameter name="Series" index="12" type_name="Empty"/>
+  <Parameter name="Part Status" index="13" type_name="String"/>
+  <Parameter name="For Measuring" index="14" type_name="String"/>
+  <Parameter name="Sensor Type" index="15" type_name="List"/>
+  <Parameter name="Current - Sensing" index="16" type_name="IUnits"/>
+  <Parameter name="Number of Channels" index="17" type_name="Integer"/>
+  <Parameter name="Output" index="18" type_name="List"/>
+  <Parameter name="Sensitivity" index="19" type_name="String"/>
+  <Parameter name="Frequency" index="20" type_name="Range"/>
+  <Parameter name="Linearity" index="21" type_name="String"/>
+  <Parameter name="Accuracy" index="22" type_name="String"/>
+  <Parameter name="Voltage - Supply" index="23" type_name="Range"/>
+  <Parameter name="Response Time" index="24" type_name="String"/>
+  <Parameter name="Current - Supply (Max)" index="25" type_name="String"/>
+  <Parameter name="Operating Temperature" index="26" type_name="Range"/>
+  <Parameter name="Polarization" index="27" type_name="String"/>
+  <Parameter name="Mounting Type" index="28" type_name="String"/>
+  <Parameter name="Package / Case" index="29" type_name="List"/>
+  <Parameter name="Supplier Device Package" index="30" type_name="String"/>
+</Table>

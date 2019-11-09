@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<Table name="RF Antennas" url="https://www.digikey.com/products/en/rf-if-and-rfid/rf-antennas/875" nonce="875" base="rf-if-and-rfid-rf-antennas">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Packaging" index="11" type_name="String"/>
+  <Parameter name="Series" index="12" type_name="Empty"/>
+  <Parameter name="Part Status" index="13" type_name="String"/>
+  <Parameter name="RF Family/Standard" index="14" type_name="String"/>
+  <Parameter name="Frequency Group" index="15" type_name="Range"/>
+  <Parameter name="Frequency (Center/Band)" index="16" type_name="List"/>
+  <Parameter name="Frequency Range" index="17" type_name="Range"/>
+  <Parameter name="Antenna Type" index="18" type_name="String"/>
+  <Parameter name="Number of Bands" index="19" type_name="Integer"/>
+  <Parameter name="VSWR" index="20" type_name="Empty"/>
+  <Parameter name="Return Loss" index="21" type_name="Empty"/>
+  <Parameter name="Gain" index="22" type_name="String"/>
+  <Parameter name="Power - Max" index="23" type_name="Empty"/>
+  <Parameter name="Features" index="24" type_name="Empty"/>
+  <Parameter name="Termination" index="25" type_name="String"/>
+  <Parameter name="Ingress Protection" index="26" type_name="Empty"/>
+  <Parameter name="Mounting Type" index="27" type_name="String"/>
+  <Parameter name="Height (Max)" index="28" type_name="String"/>
+  <Parameter name="Applications" index="29" type_name="List"/>
+</Table>

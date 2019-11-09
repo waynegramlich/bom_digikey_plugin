@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Table name="Multifunction" url="https://www.digikey.com/products/en/sensors-transducers/multifunction/551" nonce="551" base="sensors-transducers-multifunction">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="Empty"/>
+  <Parameter name="Image" index="1" type_name="Empty"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Series" index="11" type_name="Empty"/>
+  <Parameter name="Part Status" index="12" type_name="String"/>
+  <Parameter name="Sensor Type" index="13" type_name="List"/>
+  <Parameter name="Output Type" index="14" type_name="String"/>
+  <Parameter name="Operating Temperature" index="15" type_name="Range"/>
+</Table>

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<Table name="Ferrite Cores" url="https://www.digikey.com/products/en/magnetics-transformer-inductor-components/ferrite-cores/936" nonce="936" base="magnetics-transformer-inductor-components-ferrite-cores">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Series" index="11" type_name="String"/>
+  <Parameter name="Part Status" index="12" type_name="String"/>
+  <Parameter name="Core Type" index="13" type_name="String"/>
+  <Parameter name="Supplier Device Package" index="14" type_name="String"/>
+  <Parameter name="Material" index="15" type_name="String"/>
+  <Parameter name="Diameter" index="16" type_name="Empty"/>
+  <Parameter name="Inductance Factor (Al)" index="17" type_name="Empty"/>
+  <Parameter name="Tolerance" index="18" type_name="Empty"/>
+  <Parameter name="Gap" index="19" type_name="String"/>
+  <Parameter name="Effective Permeability (&#181;e)" index="20" type_name="Empty"/>
+  <Parameter name="Initial Permeability (&#181;i)" index="21" type_name="Empty"/>
+  <Parameter name="Core Factor (&#931;I/A) mm&lt;sup&gt;1&lt;/sup&gt;" index="22" type_name="Empty"/>
+  <Parameter name="Effective Length (le) mm" index="23" type_name="Empty"/>
+  <Parameter name="Effective Area (Ae) mm&#178;" index="24" type_name="Empty"/>
+  <Parameter name="Minimum Core Cross Section (Amin) mm&#178;" index="25" type_name="Empty"/>
+  <Parameter name="Effective Magnetic Volume (Ve) mm&#179;" index="26" type_name="Empty"/>
+  <Parameter name="Finish" index="27" type_name="String"/>
+  <Parameter name="Height" index="28" type_name="String"/>
+  <Parameter name="Length" index="29" type_name="String"/>
+  <Parameter name="Width" index="30" type_name="String"/>
+</Table>

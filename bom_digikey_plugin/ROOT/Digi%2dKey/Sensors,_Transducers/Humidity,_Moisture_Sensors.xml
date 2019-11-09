@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<Table name="Humidity, Moisture Sensors" url="https://www.digikey.com/products/en/sensors-transducers/humidity-moisture-sensors/529" nonce="529" base="sensors-transducers-humidity-moisture-sensors">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Packaging" index="11" type_name="String"/>
+  <Parameter name="Series" index="12" type_name="Empty"/>
+  <Parameter name="Part Status" index="13" type_name="String"/>
+  <Parameter name="Sensor Type" index="14" type_name="List"/>
+  <Parameter name="Humidity Range" index="15" type_name="Range"/>
+  <Parameter name="Output Type" index="16" type_name="String"/>
+  <Parameter name="Output" index="17" type_name="String"/>
+  <Parameter name="Accuracy" index="18" type_name="String"/>
+  <Parameter name="Response Time" index="19" type_name="IUnits"/>
+  <Parameter name="Sensitivity" index="20" type_name="Empty"/>
+  <Parameter name="Voltage - Supply" index="21" type_name="Range"/>
+  <Parameter name="Mounting Type" index="22" type_name="String"/>
+  <Parameter name="Operating Temperature" index="23" type_name="Range"/>
+  <Parameter name="Package / Case" index="24" type_name="String"/>
+  <Parameter name="Supplier Device Package" index="25" type_name="String"/>
+</Table>

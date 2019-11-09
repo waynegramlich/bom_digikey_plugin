@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<Table name="Reclosable Fasteners" url="https://www.digikey.com/products/en/hardware-fasteners-accessories/reclosable-fasteners/967" nonce="967" base="hardware-fasteners-accessories-reclosable-fasteners">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="Empty"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Series" index="11" type_name="String"/>
+  <Parameter name="Part Status" index="12" type_name="String"/>
+  <Parameter name="Type" index="13" type_name="String"/>
+  <Parameter name="Shape" index="14" type_name="Empty"/>
+  <Parameter name="Length" index="15" type_name="String"/>
+  <Parameter name="Width" index="16" type_name="String"/>
+  <Parameter name="Diameter" index="17" type_name="Empty"/>
+  <Parameter name="Mounting Type" index="18" type_name="String"/>
+  <Parameter name="Features" index="19" type_name="String"/>
+  <Parameter name="Material" index="20" type_name="String"/>
+  <Parameter name="Color" index="21" type_name="String"/>
+</Table>

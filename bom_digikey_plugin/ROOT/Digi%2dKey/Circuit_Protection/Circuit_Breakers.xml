@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<Table name="Circuit Breakers" url="https://www.digikey.com/products/en/circuit-protection/circuit-breakers/143" nonce="143" base="circuit-protection-circuit-breakers">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Series" index="11" type_name="String"/>
+  <Parameter name="Part Status" index="12" type_name="String"/>
+  <Parameter name="Breaker Type" index="13" type_name="String"/>
+  <Parameter name="Current Rating (Amps)" index="14" type_name="IUnits"/>
+  <Parameter name="Voltage Rating - AC" index="15" type_name="IUnits"/>
+  <Parameter name="Voltage Rating - DC" index="16" type_name="IUnits"/>
+  <Parameter name="Number of Poles" index="17" type_name="Integer"/>
+  <Parameter name="Actuator Type" index="18" type_name="String"/>
+  <Parameter name="Illumination" index="19" type_name="Empty"/>
+  <Parameter name="Illumination Voltage (Nominal)" index="20" type_name="Empty"/>
+  <Parameter name="Mounting Type" index="21" type_name="String"/>
+  <Parameter name="Approvals" index="22" type_name="Empty"/>
+</Table>

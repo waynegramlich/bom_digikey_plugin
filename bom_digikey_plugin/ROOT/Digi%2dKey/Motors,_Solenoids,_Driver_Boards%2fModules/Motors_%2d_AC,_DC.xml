@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<Table name="Motors - AC, DC" url="https://www.digikey.com/products/en/motors-solenoids-driver-boards-modules/motors-ac-dc/178" nonce="178" base="motors-solenoids-driver-boards-modules-motors-ac-dc">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="URL"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Series" index="11" type_name="String"/>
+  <Parameter name="Part Status" index="12" type_name="String"/>
+  <Parameter name="Type" index="13" type_name="String"/>
+  <Parameter name="Function" index="14" type_name="String"/>
+  <Parameter name="Motor Type" index="15" type_name="Empty"/>
+  <Parameter name="Voltage - Rated" index="16" type_name="String"/>
+  <Parameter name="RPM" index="17" type_name="String"/>
+  <Parameter name="Torque - Rated (oz-in / mNm)" index="18" type_name="String"/>
+  <Parameter name="Power - Rated" index="19" type_name="Empty"/>
+  <Parameter name="Encoder Type" index="20" type_name="Empty"/>
+  <Parameter name="Size / Dimension" index="21" type_name="String"/>
+  <Parameter name="Diameter - Shaft" index="22" type_name="String"/>
+  <Parameter name="Length - Shaft and Bearing" index="23" type_name="String"/>
+  <Parameter name="Mounting Hole Spacing" index="24" type_name="String"/>
+  <Parameter name="Termination Style" index="25" type_name="String"/>
+  <Parameter name="Features" index="26" type_name="Empty"/>
+  <Parameter name="Gear Reduction Ratio" index="27" type_name="Empty"/>
+  <Parameter name="Torque - Max Momentary (oz-in / mNm)" index="28" type_name="Empty"/>
+  <Parameter name="Operating Temperature" index="29" type_name="Range"/>
+</Table>

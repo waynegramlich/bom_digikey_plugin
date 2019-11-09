@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Table name="Solid State Drives (SSDs), Hard Disk Drives (HDDs)" url="https://www.digikey.com/products/en/memory-cards-modules/solid-state-drives-ssds-hard-disk-drives-hdds/503" nonce="503" base="memory-cards-modules-solid-state-drives-ssds-hard-disk-drives-hdds">
+  <Parameter name="&#65279;Datasheets" index="0" type_name="URL"/>
+  <Parameter name="Image" index="1" type_name="Empty"/>
+  <Parameter name="Digi-Key Part Number" index="2" type_name="String"/>
+  <Parameter name="Manufacturer Part Number" index="3" type_name="String"/>
+  <Parameter name="Manufacturer" index="4" type_name="String"/>
+  <Parameter name="Description" index="5" type_name="String"/>
+  <Parameter name="Quantity Available" index="6" type_name="Integer"/>
+  <Parameter name="Factory Stock" index="7" type_name="Integer"/>
+  <Parameter name="Unit Price (USD)" index="8" type_name="Float"/>
+  <Parameter name="@ qty" index="9" type_name="Integer"/>
+  <Parameter name="Minimum Quantity" index="10" type_name="Integer"/>
+  <Parameter name="Series" index="11" type_name="String"/>
+  <Parameter name="Part Status" index="12" type_name="String"/>
+  <Parameter name="Memory Size" index="13" type_name="String"/>
+  <Parameter name="Memory Type" index="14" type_name="String"/>
+  <Parameter name="Form Factor" index="15" type_name="List"/>
+  <Parameter name="Speed - Read" index="16" type_name="String"/>
+  <Parameter name="Speed - Write" index="17" type_name="String"/>
+  <Parameter name="Voltage - Supply" index="18" type_name="IUnits"/>
+  <Parameter name="Type" index="19" type_name="String"/>
+  <Parameter name="Current - Max" index="20" type_name="Empty"/>
+  <Parameter name="Operating Temperature" index="21" type_name="Range"/>
+  <Parameter name="Weight" index="22" type_name="Empty"/>
+  <Parameter name="Size / Dimension" index="23" type_name="String"/>
+</Table>
