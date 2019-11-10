@@ -48,7 +48,7 @@
 #       flake8 --max-line-length=100 digikey.py | fgrep -v :3:1:
 
 from argparse import ArgumentParser
-from bom_manager.node_view import (BomManager, Callable, Collection, Directory, Node, Table)
+from bom_manager.node_view import (BomManager, Collection, Directory, Node, Table)
 from bom_manager.tracing import trace, trace_level_get, trace_level_set, tracing_get
 import bs4   # type: ignore
 from bs4 import BeautifulSoup
@@ -517,29 +517,6 @@ class Digikey:
     #                                                            from_root_path, downloads_count)
     #     return downloads_count
 
-    # Digikey.collection_csvs_read_and_process():
-    # @trace(1)
-    def collection_csvs_read_and_process(self, collection: Collection, bind: bool) -> None:
-        # Grab the *csvs_directory* from *digikey* (i.e. *self*):
-        digikey: Digikey = self
-        root_path: Path = digikey.root_path
-        bom_manager: BomManager = digikey.bom_manager
-
-        # Convert the *digikey_collection* name into a *digikey_collection_file_path*:
-        to_file_name: Callable[[str], str] = bom_manager.to_file_name
-        collection_name: str = collection.name
-        collection_file_name: str = to_file_name(collection_name)
-        collection_path: Path = root_path / collection_file_name
-
-        # Fetch example `.csv` files for each table in *digikey_collection*:
-        sub_directories: List[Directory] = collection.directories_get(True)
-        sub_directory: Directory
-        for sub_directory in sub_directories:
-            sub_directory_name: str = sub_directory.name
-            sub_directory_file_name = to_file_name(sub_directory_name)
-            sub_directory_path = collection_path / sub_directory_file_name
-            digikey.directory_csv_read_and_process(sub_directory, sub_directory_path, bind)
-
     # Digikey.csv_fetch():
     # @trace(1)
     # def csv_fetch(self, search_url: str, csv_file_name: str) -> bool:
@@ -679,31 +656,6 @@ class Digikey:
     #     # Wrap up any requested *tracing* and return *result*;
     #     result: bool = True
     #     return result
-
-    # Digikey.directory_csv_read_and_process():
-    # @trace(1)
-    def directory_csv_read_and_process(self, directory: Directory,
-                                       directory_path: Path, bind: bool) -> None:
-        # Grab some values from *directory* (i.e. *self*):
-        digikey: Digikey = self
-        bom_manager: BomManager = digikey.bom_manager
-
-        # Visit all of the *tables* in this *directory*:
-        to_file_name: Callable[[str], str] = bom_manager.to_file_name
-        sub_directories: List[Directory]
-        sub_directories = directory.sub_directories_get(True)
-        sub_directory: Directory
-        for sub_directory in sub_directories:
-            sub_directory_name: str = sub_directory.name
-            sub_directory_file_name: str = to_file_name(sub_directory_name)
-            sub_directory_path: Path = directory_path / sub_directory_file_name
-            digikey.directory_csv_read_and_process(sub_directory, sub_directory_path, bind)
-
-        # Visit all of the *digikey_tables* in this *digikey_directory*:
-        tables: List[Table] = directory.tables_get(True)
-        table: Table
-        for table in tables:
-            table.csv_read_and_process(directory_path, bind)
 
     # Digikey.directory_reorganize():
     @trace(1)
@@ -954,7 +906,7 @@ class Digikey:
         # Perform the analysis of the `.csv` files and generate the table `.xml` files:
         if tracing:
             print(f"{tracing}================================================================")
-        digikey.collection_csvs_read_and_process(collection, True)
+        collection.csvs_read_and_process(True)
 
     # Digikey.soup_extract():
     def soup_extract(self, beautiful_soup: BeautifulSoup) -> Dict[str, List[Match]]:
