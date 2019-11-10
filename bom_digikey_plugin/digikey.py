@@ -57,64 +57,146 @@ from bs4 import element as Element
 # import os
 from pathlib import Path
 import requests
-import time
-from typing import Any, Dict, List, IO, Optional, TextIO, Tuple
+# import time
+from typing import Any, Dict, List, IO, Optional, Tuple
 # Match = Tuple[str, str, int, str, str, str]
 
 
 # main():
 # @trace(1)
 def main() -> int:
-    # Create the *digikey* object and process it:
+    """bom_digikey command line entry point.
 
-    # Parse the command line:
+    The `bom_digikey` command is the command used to setup the Digi-Key collection
+    directory/file structures.  It is not meant to be executed by end-users, just
+    the keeper fo the Digi-Key collection.  The results of this operation are checked
+    into `github.com` repository and uploaded to `https:pypi.org`.  After that people
+    can access the Digi-Key collection by simply running `pip`:
+
+         pip install bom_digikey_plugin
+
+    The syntax of the command line is:
+
+         bom_digikey [--home HOME] [-v]
+
+    The `--home` option specifies where the data structures are to be stored.
+    The `-v` option increases the verbosity of tracing information for debugging purposes.
+    """
+    # The `bom_digikey` command is configured in the `setup.py` for this package.
+    # The key lines are:
+    #
+    #      entry_points={
+    #          "console_scripts": ["bom_digikey=bom_digikey_plugin:main"],
+    #          ...
+    #      }
+    #
+    # This instructs the `pip` installer to construct a command line executable file and ensure
+    # that it is accessable via the `$PATH` execution path envirnoment variable.  The executable
+    # file invokes the *main* function in the `__init__.py`  mododule in the package.  That
+    # `main` function, in turn, calls this main function.
+
+    # Start by creating the command line *parser*, configuring it, and parsing the command
+    # line arguments:
     parser: ArgumentParser = ArgumentParser(description="Digi-Key Collection Constructor.")
     parser.add_argument("-v", "--verbose", action="count",
                         help="Set tracing level (defaults to 0 which is off).")
     parser.add_argument("--home",
                         help="Specify the HOME directory for the collection files.")
     parsed_arguments: Dict[str, Any] = vars(parser.parse_args())
-    verbose_count: int = 0 if parsed_arguments["verbose"] is None else parsed_arguments["verbose"]
-    trace_level_set(verbose_count)
 
-    # Figure out what to use for *home_path*:
+    # Extract the command line options:
+    verbose: int = 0 if parsed_arguments["verbose"] is None else parsed_arguments["verbose"]
     home: Optional[str] = parsed_arguments["home"]
+
+    # Convert the *home* string into *home_path*:
     home_path: Path
     if home is None:
+        # The *home* option was not specified, so we default to the package directory:
         digikey_py_file_name: str = __file__
         digikey_py_path: Path = Path(digikey_py_file_name)
         home_path = digikey_py_path.parent
-        assert digikey_py_path.name == "digikey.py", f"'{digikey_py_path}' is not named 'digkey.py'"
     else:
         home_path = Path(home)
 
     # Perform any requested *tracing*:
+    trace_level_set(verbose)
     tracing: str = tracing_get()
     if tracing:  # pragma: no cover
         print(f"{tracing}home_path='{home_path}'")
 
+    # Create the *digikey* object and process it:
     digikey: Digikey = Digikey(home_path)
     digikey.process()
     result: int = 0
     return result
 
 
-# Is this used any more??!!!
-# url_load():
-# @trace(1)
-# def collection_get(bom_manager: BomManager,
-#                    collection_root: Path, searches_root: Path) -> "DigikeyCollection":
-#     digikey_collection: DigikeyCollection = DigikeyCollection(bom_manager,
-#                                                               collection_root, searches_root)
-#     return digikey_collection
+# Match:
+class Match:
+    """Represents an HRef match.
+
+    This is a helper class that contains information that was extracted
+    from the `.html` file.  It is place before the *Digikey* class
+    declaration to eliminate confusion with `flake8`.
+    """
+
+    def __init__(self, href: str, base: str, nonce: int,
+                 a_content: str, li_content: str, url: str) -> None:
+        """Initialize a match object."""
+        # match: Match = self
+        self.href: str = href
+        self.base: str = base
+        self.nonce: int = nonce
+        self.a_content: str = a_content
+        self.li_content: str = li_content
+        self.url: str = url
+
+    def __str__(self):
+        """Return a string representation of a match object."""
+        match: Match = self
+        result: str = "Match(???)"
+        if hasattr(match, "base"):
+            href: str = match.href
+            base: str = match.base
+            nonce: int = match.nonce
+            a_content: str = match.a_content
+            li_content: str = match.li_content
+            url: str = match.url
+            result = f"'Match('{href}', '{base}', {nonce}, '{a_content}', '{li_content}', '{url}')"
+        return result
+
+    def key(self) -> Tuple[str, str, int, str, str, str]:
+        """Return a key suitable for sorting matches."""
+        match: Match = self
+        href: str = match.href
+        base: str = match.base
+        nonce: int = match.nonce
+        a_content: str = match.a_content
+        li_content: str = match.li_content
+        url: str = match.url
+        tuple: Tuple[str, str, int, str, str, str] = (href, base, nonce, a_content, li_content, url)
+        return tuple
 
 
 # Digikey:
 class Digikey:
+    """The gloabal class used to construct the Digikey collection."""
 
     # Digikey.__init__():
     # @trace(1)
     def __init__(self, home_path: Path) -> None:
+        """Initialize the *Digikey* object.
+
+        Initialize *digikey* (i.e. *self*) using *home_path* to specify
+        the location to find all of the `.csv` and `.xml` files.
+
+        Args:
+            *home_path* (*Path*): The path to the directory that
+                contains the various files.  In particular, this
+                directory contains both the `ROOT` and `MISC`
+                sub-directories.
+
+        """
         # Compute the various file paths:
         root_path: Path = home_path / "ROOT"
         miscellaneous_path: Path = home_path / "MISC"
@@ -129,46 +211,34 @@ class Digikey:
             print(f"{tracing}products_html_path='{products_html_path}'")
 
         # Make sure everything exists:
-        assert root_path.is_dir(), f"'{root_path}' is not a directory"
-        assert miscellaneous_path.is_dir(), f"'{miscellaneous_path}' is not a directory"
-        assert products_html_path.is_file(), f"'{products_html_path} is not a file'"
+        root_path.mkdir(parents=True, exist_ok=True)
+        miscellaneous_path.is_dir(), f"'{miscellaneous_path}' is not a directory"
+        products_html_path.is_file(), f"'{products_html_path} is not a file'"
 
         # Create *bom_manager* to hold all of the *Node* based data structures:
         bom_manager: BomManager = BomManager()
-        # digikey_collection_template: NodeTemplate = NodeTemplate(DigikeyCollection,
-        #                                                          (DigikeyDirectory,),
-        #                                                          {"collection_root": Path,
-        #                                                           "name": str,
-        #                                                           "searches_root": Path})
-        # digikey_directory_template: NodeTemplate = NodeTemplate(DigikeyDirectory,
-        #                                                         (DigikeyDirectory, DigikeyTable),
-        #                                                         {"name": str})
-        # digikey_table_template: NodeTemplate = NodeTemplate(DigikeyTable,
-        #                                                     (Parameter, Search, TableComment),
-        #                                                     {"file_name": str,
-        #                                                      "name": str})
-        # bom_manager.node_template_add(digikey_collection_template)
-        # bom_manager.node_template_add(digikey_directory_template)
-        # bom_manager.node_template_add(digikey_table_template)
 
         # Stuff various file names into *digikey* (i.e. *self*):
-        # digikey = self
+        # digikey: Digikey = self
         self.bom_manager: BomManager = bom_manager
         self.products_html_path: Path = products_html_path
         self.root_path: Path = root_path
 
     # Digikey.__str__():
     def __str__(self):
+        """Return a string representation."""
         return "Digikey()"
 
     # Digikey.collection_extract():
     # @trace(1)
-    def collection_extract(self, hrefs_table: "Dict[str, List[Match]]") -> "Collection":
+    def collection_extract(self, hrefs_table: Dict[str, List[Match]]) -> Collection:
+        """
+        """
         # Now we construct *collection* which is a *Collection* that contains a set of
-        # *DigkeyDirectory*'s (which are sub-classed from *Directory*.  Each of those
-        # nested *DigikeyDirectory*'s contains a further list of *DigikeyTable*'s.
+        # *Directory*'s.  Each of these nested *Directory*'s contains a further list
+        # of *Table*'s.
         #
-        # The sorted keys from *hrefs_table* are alphabetized by '*base*/*nonce*' an look basically
+        # The sorted keys from *hrefs_table* are alphabetized by '*base*/*nonce*' to look basically
         # as follows:
         #
         #        None/-1                                          # Null => Root directory
@@ -234,20 +304,18 @@ class Digikey:
         collections_root_path: Path = digikey.root_path
         searches_root_path: Path = Path()  # TODO: Fixme:
 
-        # Create the *collection* (*collections* is temporary and is not really used):
-        # collection_directories: List[str] = list()
-        # partial_load: bool = False
-
+        # Create the *collection*:
         collection: Collection = Collection(bom_manager, "Digi-Key",
                                             collections_root_path, searches_root_path)
+
         # Create the sorted *hrefs_table_keys*:
         hrefs_table_keys: List[Tuple[int, str]] = list(enumerate(sorted(hrefs_table.keys())))
 
         # Sweep through sorted *hrefs* and process each *matches* lists:
+        tracing: str = tracing_get()
         current_directory: Optional[Directory] = None
         href_index: int
         hrefs_key: str
-        tracing: str = tracing_get()
         trace_level: int = trace_level_get()
         for href_index, hrefs_key in hrefs_table_keys:
             matches: List[Match] = hrefs_table[hrefs_key]
@@ -294,7 +362,7 @@ class Digikey:
             elif items < 0:
                 # We have a new *DigikeyDirectory* to create and make the *current_directory*.
                 if tracing:
-                    print(f"{tracing}new directory")
+                    print(f"{tracing}new directory '{name}'")
                 assert isinstance(url, str)
                 current_directory = Directory(bom_manager, name, url, nonce)
                 assert isinstance(current_directory, Directory)
@@ -305,8 +373,7 @@ class Digikey:
                 assert current_directory is not None
                 assert isinstance(url, str)
                 collection_key: Tuple[int, int] = (-1, -1)
-                table: Table = Table(bom_manager, name, collection_key,
-                                     url, nonce, base)
+                table: Table = Table(bom_manager, name, collection_key, url, nonce, base)
                 current_directory.table_insert(table)
 
         # *collection* is in its first incarnation and ready for reorganization:
@@ -315,15 +382,28 @@ class Digikey:
     # Digikey.collection_reorganize():
     # @trace(1)
     def collection_reorganize(self, collection: Collection) -> None:
+        """Recursively reorganize a collection.
+
+        The catagory organziation from the Digi-Key web site has a bunch
+        of tables that should be grouped into a sub-table.  This code
+        recusively analyizes *collection*, finds those grouping, and
+        restructures the collection to have those sub-directories.
+
+        Args:
+            *collection* (*Collection*): The *collection* to
+                reorganize.
+
+        """
+        # Use *digikey* instead of *self*:
         digikey: Digikey = self
+        tracing: str = tracing_get()
 
         # Extract a sorted list of *directories* from *collection*:
         directories: List[Directory] = collection.directories_get(True)
 
-        # print("len(directories)={0}".format(len(directories)))
+        # Sweep though the *directoires* of *collection*:
         directory_index: int
         directory: Directory
-        tracing: str = tracing_get()
         for directory_index, directory in enumerate(directories):
             if tracing:  # pragma: no cover
                 print(f"Directory[{directory_index}]: '{directory.name}'")
@@ -332,9 +412,20 @@ class Digikey:
     # Digikey.collection_verify():
     # @trace(1)
     def collection_verify(self, collection: Collection,
-                          hrefs_table: "Dict[str, List[Match]]") -> None:
-        # For testing only, grab all of the *directories* and *tables* from *root_directory*,
-        # count them up, and validate that the sizes all match:
+                          hrefs_table: Dict[str, List[Match]]) -> None:
+        """Verify that collection reorganization worked.
+
+        The *Digikey.collection_reorganize*() method is sufficiently
+        complicated that it is useful to do a sanity check to ensure
+        that no tables got lost.
+
+        Args:
+            *collection* (*Collection*): The collection to verify
+            *hrefs_table* (*Dict*[*str*, *List*[*Match*]]): The
+                hrefs table that lists each table.
+        """
+        # Recursively grab all of the *directories* from *collection* and compute
+        # *directories_size*:
         directory_nodes: List[Node] = list()
         collection.nodes_collect_recursively(Directory, directory_nodes)
         directory_node: Node
@@ -342,24 +433,26 @@ class Digikey:
                                         for directory_node in directory_nodes]
         directories_size = len(directories)
 
+        # Recursively grab all of the *tables* from *collection* and compute *tables_size*:
         table_nodes: List[Node] = list()
         collection.nodes_collect_recursively(Table, table_nodes)
         table_node: Node
         tables: List[Table] = [table_node.table_cast() for table_node in table_nodes]
         tables_size = len(tables)
 
+        # Compute the number of values in *hrefs_table*:
         hrefs_table_size: int = len(hrefs_table)
 
-        # Verify that we did not loose anything during extraction:
+        # Perform any requested *tracing*:
         tracing: str = tracing_get()
         if tracing:  # pragma: no cover
             print(f"{tracing}directories_size={directories_size}")
             print(f"{tracing}tables_size={tables_size}")
             print(f"{tracing}hrefs_table_size={hrefs_table_size}")
 
-        # For debugging only:
+        # If the various sizes do not match exactly, we have a bug and do some debugging code:
         if hrefs_table_size != directories_size + tables_size:
-            # Make a copy of *hrefs_table*:
+            # We failed to match, so we start by making a *hrefs_table_copy*:
             hrefs_table_copy: Dict[str, List[Match]] = hrefs_table.copy()
 
             # Remove all of the *tables* from *hrefs_table_copy*:
@@ -388,40 +481,41 @@ class Digikey:
             # Print out the remaining unumatched keys:
             print(f"{tracing}hrefs_table_copy.keys={list(hrefs_table_copy.keys())}")
 
+            # Now we can fail:
             assert errors == 0, f"{errors} Error found"
 
-    # Digikey.collection_csvs_download():
-    def collection_csvs_download(self, collection: Collection) -> int:
-        # Grab the *csvs_directory* from *digikey* (i.e. *self*):
-        digikey: Digikey = self
-        bom_manager: BomManager = digikey.bom_manager
-        root_path: Path = digikey.root_path
+    # # Digikey.collection_csvs_download():
+    # def collection_csvs_download(self, collection: Collection) -> int:
+    #     # Grab the *csvs_directory* from *digikey* (i.e. *self*):
+    #     digikey: Digikey = self
+    #     bom_manager: BomManager = digikey.bom_manager
+    #     root_path: Path = digikey.root_path
+    #
+    #     # Create *digikey_collection_file_name* (hint: it is simply "Digikey"):
+    #     collection_name: str = collection.name
+    #     to_file_name: Callable[[str], str] = bom_manager.to_file_name
+    #     collection_file_name = to_file_name(collection_name)
+    #
+    #     # Create the *collection_root_path* which is an extra directory with
+    #     # the collection name.  This is consistent with the organization of the
+    #     # searches directories, where first directies specify a collection name:
+    #     collection_root_path: Path = root_path / collection_file_name
+    #
+    #     # Fetch example `.csv` files for each table in *collection*:
+    #     downloads_count: int = 0
+    #     directories: List[Directory] = collection.directories_get(True)
+    #     directory: Directory
+    #     for directory in directories:
+    #         # Create the *from_root_path* to the corresponding *directory* location
+    #         # in the file system:
+    #         directory_name: str = directory.name
+    #         directory_file_name: str = to_file_name(directory_name)
+    #         from_root_path: Path = collection_root_path / directory_file_name
 
-        # Create *digikey_collection_file_name* (hint: it is simply "Digikey"):
-        collection_name: str = collection.name
-        to_file_name: Callable[[str], str] = bom_manager.to_file_name
-        collection_file_name = to_file_name(collection_name)
-
-        # Create the *collection_root_path* which is an extra directory with
-        # the collection name.  This is consistent with the organization of the
-        # searches directories, where first directies specify a collection name:
-        collection_root_path: Path = root_path / collection_file_name
-
-        # Fetch example `.csv` files for each table in *collection*:
-        downloads_count: int = 0
-        directories: List[Directory] = collection.directories_get(True)
-        directory: Directory
-        for directory in directories:
-            # Create the *from_root_path* to the corresponding *directory* location
-            # in the file system:
-            directory_name: str = directory.name
-            directory_file_name: str = to_file_name(directory_name)
-            from_root_path: Path = collection_root_path / directory_file_name
-
-            # Now recursively visit each of the *digikey_directory*:
-            downloads_count += digikey.directory_csvs_download(directory,
-                                                               from_root_path, downloads_count)
-        return downloads_count
+    #         # Now recursively visit each of the *digikey_directory*:
+    #         downloads_count += digikey.directory_csvs_download(directory,
+    #                                                            from_root_path, downloads_count)
+    #     return downloads_count
 
     # Digikey.collection_csvs_read_and_process():
     # @trace(1)
@@ -448,174 +542,143 @@ class Digikey:
 
     # Digikey.csv_fetch():
     # @trace(1)
-    def csv_fetch(self, search_url: str, csv_file_name: str) -> bool:
-        # Construct the header values that need to be sent with the *search_url*:
-        authority_text: str = "www.digikey.com"
-        accept_text: str = (
-            "text/html,application/xhtml+xml,application/xml;"
-            "q=0.9,image/webp,image/apng,*/*;"
-            "q=0.8,application/signed-exchange;"
-            "v=b3"
-        )
-        accept_encoding_text: str = "gzip, deflate, br"
-        cookie_text: str = (
-            "i10c.bdddb=c2-f0103ZLNqAeI3BH6yYOfG7TZlRtCrMwzKDQfPMtvESnCuVjBtyWjJ1l"
-            "kqXtKsvswxDrjRHdkESNCtx04RiOfGqfIlRUHqt1qPnlkPolfJSiIRsomx0RhMqeKlRtT3"
-            "jxvKEOjKMDfJSvUoxo6uXWaGVZkqoAhloxqQlofPwYkJcS6fhQ6tzOgotZkQMtHDyjnA4lk"
-            "PHeIKNnroxoY8XJKBvefrzwFru4qPnlkPglfJSiIRvjBTuTfbEZkqMupstsvz8qkl7wWr3i"
-            "HtspjsuTFBve9SHoHqjyTKIPfPM3uiiAioxo6uXOfGvdfq4tFloxqPnlkPcxyESnCuVjBt1"
-            "VmBvHmsYoHqjxVKDq3fhvfJSiIRsoBsxOftucfqRoMRjxVKDq3BuEMuNnHoyM9oz3aGv4ul"
-            "RtCrMsvP8tJOPeoESNGw2q6tZSiN2ZkQQxHxjxVOHukKMDjOQlCtXnGt4OfqujoqMtrpt3y"
-            "KDQjVMffM3iHtsolozT7WqeklSRGloXqPDHZHCUfJSiIRvjBTuTfQeKKYMtHlpVtKDQfPM2"
-            "uESnCuVm6tZOfGK1fqRoIOjxvKDrfQvYkvNnuJsojozTaLW"
-        )
+    # def csv_fetch(self, search_url: str, csv_file_name: str) -> bool:
+    #     # Construct the header values that need to be sent with the *search_url*:
+    #     authority_text: str = "www.digikey.com"
+    #     accept_text: str = (
+    #         "text/html,application/xhtml+xml,application/xml;"
+    #         "q=0.9,image/webp,image/apng,*/*;"
+    #         "q=0.8,application/signed-exchange;"
+    #         "v=b3"
+    #     )
+    #     accept_encoding_text: str = "gzip, deflate, br"
+    #     cookie_text: str = (
+    #         "i10c.bdddb=c2-f0103ZLNqAeI3BH6yYOfG7TZlRtCrMwzKDQfPMtvESnCuVjBtyWjJ1l"
+    #         "kqXtKsvswxDrjRHdkESNCtx04RiOfGqfIlRUHqt1qPnlkPolfJSiIRsomx0RhMqeKlRtT3"
+    #         "jxvKEOjKMDfJSvUoxo6uXWaGVZkqoAhloxqQlofPwYkJcS6fhQ6tzOgotZkQMtHDyjnA4lk"
+    #         "PHeIKNnroxoY8XJKBvefrzwFru4qPnlkPglfJSiIRvjBTuTfbEZkqMupstsvz8qkl7wWr3i"
+    #         "HtspjsuTFBve9SHoHqjyTKIPfPM3uiiAioxo6uXOfGvdfq4tFloxqPnlkPcxyESnCuVjBt1"
+    #         "VmBvHmsYoHqjxVKDq3fhvfJSiIRsoBsxOftucfqRoMRjxVKDq3BuEMuNnHoyM9oz3aGv4ul"
+    #         "RtCrMsvP8tJOPeoESNGw2q6tZSiN2ZkQQxHxjxVOHukKMDjOQlCtXnGt4OfqujoqMtrpt3y"
+    #         "KDQjVMffM3iHtsolozT7WqeklSRGloXqPDHZHCUfJSiIRvjBTuTfQeKKYMtHlpVtKDQfPM2"
+    #         "uESnCuVm6tZOfGK1fqRoIOjxvKDrfQvYkvNnuJsojozTaLW"
+    #     )
 
-        # Construct *headers*:
-        headers: Dict[str, str] = {
-            "authority": authority_text,
-            "accept": accept_text,
-            "accept-encoding": accept_encoding_text,
-            "cookie": cookie_text
-        }
+    #     # Construct *headers*:
+    #     headers: Dict[str, str] = {
+    #         "authority": authority_text,
+    #         "accept": accept_text,
+    #         "accept-encoding": accept_encoding_text,
+    #         "cookie": cookie_text
+    #     }
 
-        # Attempt the fetch the contents of *search_url* using *headers*:
-        try:
-            response: requests.Response = requests.get(search_url, headers=headers)
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as http_error:
-            assert False, f"HTTP error occurred '{http_error}'"
-        except Exception as error:
-            assert False, f"Other exception occurred: '{error}'"
+    #     # Attempt the fetch the contents of *search_url* using *headers*:
+    #     try:
+    #         response: requests.Response = requests.get(search_url, headers=headers)
+    #         response.raise_for_status()
+    #     except requests.exceptions.HTTPError as http_error:
+    #         assert False, f"HTTP error occurred '{http_error}'"
+    #     except Exception as error:
+    #         assert False, f"Other exception occurred: '{error}'"
 
-        # Now parse the resulting *html_text* using a *soup* to find the *csv_url*:
-        html_text: str = str(response.content)
+    #     # Now parse the resulting *html_text* using a *soup* to find the *csv_url*:
+    #     html_text: str = str(response.content)
 
-        soup: Optional[BeautifulSoup] = BeautifulSoup(html_text, features="lxml")
-        assert soup is not None
-        tracing: str = tracing_get()
-        # print(f"{tracing}type(soup)=", type(soup))
-        pairs: List[str] = []
-        pairs_text: Optional[str] = None
-        if tracing:
-            print(f"{tracing}here 2b")
-        formtag: Element.Tag
-        for form_tag in soup.find_all("form"):
-            name: str = form_tag.get("name")
-            if name == "downloadform":
-                # We found it:
-                if tracing:
-                    print(f"{tracing}form_tag={form_tag}")
-                index: int
-                input_tag: Element.Tag
-                for index, input_tag in enumerate(form_tag.children):
-                    # print(input_tag)
-                    input_tag_name: Optional[str] = input_tag.name
-                    if isinstance(input_tag_name, str) and input_tag_name.lower() == "input":
-                        input_name: str = input_tag.get("name")
-                        input_value: str = input_tag.get("value")
-                        input_value = input_value.replace(",", "%2C")
-                        input_value = input_value.replace('|', "%7C")
-                        input_value = input_value.replace(' ', "+")
-                        pair: str = f"{input_name}={input_value}"
-                        if tracing:
-                            print(f"{tracing}input_name='{input_name}'")
-                            print(f"{tracing}input_value='{input_value}'")
-                            print(f"{tracing}pair='{pair}'")
-                        pairs.append(pair)
-                pairs_text = '&'.join(pairs)
-                if tracing:
-                    print(f"{tracing}pairs_text='{pairs_text}'")
-        assert isinstance(pairs_text, str)
+    #     soup: Optional[BeautifulSoup] = BeautifulSoup(html_text, features="lxml")
+    #     assert soup is not None
+    #     tracing: str = tracing_get()
+    #     # print(f"{tracing}type(soup)=", type(soup))
+    #     pairs: List[str] = []
+    #     pairs_text: Optional[str] = None
+    #     if tracing:
+    #         print(f"{tracing}here 2b")
+    #     formtag: Element.Tag
+    #     for form_tag in soup.find_all("form"):
+    #         name: str = form_tag.get("name")
+    #         if name == "downloadform":
+    #             # We found it:
+    #             if tracing:
+    #                 print(f"{tracing}form_tag={form_tag}")
+    #             index: int
+    #             input_tag: Element.Tag
+    #             for index, input_tag in enumerate(form_tag.children):
+    #                 # print(input_tag)
+    #                 input_tag_name: Optional[str] = input_tag.name
+    #                 if isinstance(input_tag_name, str) and input_tag_name.lower() == "input":
+    #                     input_name: str = input_tag.get("name")
+    #                     input_value: str = input_tag.get("value")
+    #                     input_value = input_value.replace(",", "%2C")
+    #                     input_value = input_value.replace('|', "%7C")
+    #                     input_value = input_value.replace(' ', "+")
+    #                     pair: str = f"{input_name}={input_value}"
+    #                     if tracing:
+    #                         print(f"{tracing}input_name='{input_name}'")
+    #                         print(f"{tracing}input_value='{input_value}'")
+    #                         print(f"{tracing}pair='{pair}'")
+    #                     pairs.append(pair)
+    #             pairs_text = '&'.join(pairs)
+    #             if tracing:
+    #                 print(f"{tracing}pairs_text='{pairs_text}'")
+    #     assert isinstance(pairs_text, str)
 
-        # Construct the *csv_url*:
-        csv_url: str = "https://www.digikey.com/product-search/download.csv?" + pairs_text
-        if tracing:
-            print(f"{tracing}csv_url='{csv_url}'")
+    #     # Construct the *csv_url*:
+    #     csv_url: str = "https://www.digikey.com/product-search/download.csv?" + pairs_text
+    #     if tracing:
+    #         print(f"{tracing}csv_url='{csv_url}'")
 
-        # Construct the text strings fort the *headers*:
-        authority_text = "www.digikey.com"
-        accept_text = (
-            "text/html,application/xhtml+xml,application/xml;"
-            "q=0.9,image/webp,image/apng,*/*;"
-            "q=0.8,application/signed-exchange;"
-            "v=b3"
-        )
-        accept_encoding_text = "gzip, deflate, br"
-        cookie_text = (
-            "i10c.bdddb="
-            "c2-94990ugmJW7kVZcVNxn4faE4FqDhn8MKnfIFvs7GjpBeKHE8KVv5aK34FQDgF"
-            "PFsXXF9jma8opCeDMnVIOKCaK34GOHjEJSFoCA9oxF4ir7hqL8asJs4nXy9FlJEI"
-            "8MujcFW5Bx9imDEGHDADOsEK9ptrlIgAEuIjcp4olPJUjxXDMDVJwtzfuy9FDXE5"
-            "sHKoXGhrj3FpmCGDMDuQJs4aLb7AqsbFDhdjcF4pJ4EdrmbIMZLbAQfaK34GOHbF"
-            "nHKo1rzjl24jP7lrHDaiYHK2ly9FlJEADMKpXFmomx9imCGDMDqccn4fF4hAqIgF"
-            "JHKRcFFjl24iR7gIfTvaJs4aLb4FqHfADzJnXF9jqd4iR7gIfz8t0TzfKyAnpDgp"
-            "8MKEmA9og3hdrCbLvCdJSn4FJ6EFlIGEHKOjcp8sm14iRBkMT8asNwBmF3jEvJfA"
-            "DwJtgD4oL1Eps7gsLJaKJvfaK34FQDgFfcFocAAMr27pmCGDMD17GivaK34GOGbF"
-            "nHKomypOTx9imDEGHDADOsTpF39ArqeADwFoceWjl24jP7gIHDbDPRzfwy9JlIlA"
-            "DTFocAEP"
-        )
+    #     # Construct the text strings fort the *headers*:
+    #     authority_text = "www.digikey.com"
+    #     accept_text = (
+    #         "text/html,application/xhtml+xml,application/xml;"
+    #         "q=0.9,image/webp,image/apng,*/*;"
+    #         "q=0.8,application/signed-exchange;"
+    #         "v=b3"
+    #     )
+    #     accept_encoding_text = "gzip, deflate, br"
+    #     cookie_text = (
+    #         "i10c.bdddb="
+    #         "c2-94990ugmJW7kVZcVNxn4faE4FqDhn8MKnfIFvs7GjpBeKHE8KVv5aK34FQDgF"
+    #         "PFsXXF9jma8opCeDMnVIOKCaK34GOHjEJSFoCA9oxF4ir7hqL8asJs4nXy9FlJEI"
+    #         "8MujcFW5Bx9imDEGHDADOsEK9ptrlIgAEuIjcp4olPJUjxXDMDVJwtzfuy9FDXE5"
+    #         "sHKoXGhrj3FpmCGDMDuQJs4aLb7AqsbFDhdjcF4pJ4EdrmbIMZLbAQfaK34GOHbF"
+    #         "nHKo1rzjl24jP7lrHDaiYHK2ly9FlJEADMKpXFmomx9imCGDMDqccn4fF4hAqIgF"
+    #         "JHKRcFFjl24iR7gIfTvaJs4aLb4FqHfADzJnXF9jqd4iR7gIfz8t0TzfKyAnpDgp"
+    #         "8MKEmA9og3hdrCbLvCdJSn4FJ6EFlIGEHKOjcp8sm14iRBkMT8asNwBmF3jEvJfA"
+    #         "DwJtgD4oL1Eps7gsLJaKJvfaK34FQDgFfcFocAAMr27pmCGDMD17GivaK34GOGbF"
+    #         "nHKomypOTx9imDEGHDADOsTpF39ArqeADwFoceWjl24jP7gIHDbDPRzfwy9JlIlA"
+    #         "DTFocAEP"
+    #     )
 
-        # Construct *headers*:
-        headers = {
-            "authority": authority_text,
-            "accept": accept_text,
-            "accept-encoding": accept_encoding_text,
-            "cookie": cookie_text
-        }
+    #     # Construct *headers*:
+    #     headers = {
+    #         "authority": authority_text,
+    #         "accept": accept_text,
+    #         "accept-encoding": accept_encoding_text,
+    #         "cookie": cookie_text
+    #     }
 
-        # Attempt the fetch the contents of *csv_fetch_url* using *headers*:
-        if tracing:
-            print(f"{tracing}A:Fetching '{csv_url}' extracted '{search_url}' contents:")
-        try:
-            response = requests.get(csv_url, headers=headers)
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as http_error:
-            assert False, f"HTTP error occurred '{http_error}'"
-        except Exception as error:
-            assert False, f"Other exception occurred: '{error}'"
+    #     # Attempt the fetch the contents of *csv_fetch_url* using *headers*:
+    #     if tracing:
+    #         print(f"{tracing}A:Fetching '{csv_url}' extracted '{search_url}' contents:")
+    #     try:
+    #         response = requests.get(csv_url, headers=headers)
+    #         response.raise_for_status()
+    #     except requests.exceptions.HTTPError as http_error:
+    #         assert False, f"HTTP error occurred '{http_error}'"
+    #     except Exception as error:
+    #         assert False, f"Other exception occurred: '{error}'"
 
-        # Now write *csv_text* out to *csv_file_name*:
-        csv_text: str = str(response.content)
-        csv_file: TextIO
-        with open(csv_file_name, "w") as csv_file:
-            csv_file.write(csv_text)
-        if tracing:
-            print(f"{tracing}Wrote out '{csv_file_name}'")
+    #     # Now write *csv_text* out to *csv_file_name*:
+    #     csv_text: str = str(response.content)
+    #     csv_file: TextIO
+    #     with open(csv_file_name, "w") as csv_file:
+    #         csv_file.write(csv_text)
+    #     if tracing:
+    #         print(f"{tracing}Wrote out '{csv_file_name}'")
 
-        # Wrap up any requested *tracing* and return *result*;
-        result: bool = True
-        return result
-
-    # Digikey.directory_csvs_download():
-    def directory_csvs_download(self, directory: Directory,
-                                from_root_path: Path, downloads_count: int) -> int:
-        """TODO."""
-        # Grab some values from *digikey_directory* (i.e. *self*):
-        digikey: Digikey = self
-        bom_manager: BomManager = digikey.bom_manager
-        to_file_name: Callable[[str], str] = bom_manager.to_file_name
-
-        # First, visit all of the *sub_digikey_directories* from *digikey_directory*:
-        tracing: str = tracing_get()
-        sub_directories: List[Directory]
-        sub_directories = directory.sub_directories_get(True)
-        sub_directory: Directory
-        for sub_directory in sub_directories:
-            directory_name: str = sub_directory.name
-            directory_file_name: str = to_file_name(directory_name)
-            sub_from_root_path: Path = from_root_path / directory_file_name
-            if tracing:
-                print(f"{tracing}sub_from_root_path='{sub_from_root_path}")
-            downloads_count += digikey.directory_csvs_download(sub_directory,
-                                                               sub_from_root_path,
-                                                               downloads_count)
-
-        # Second, visit all of the *tables* of *digikey_directory*:
-        tables: List[Table] = directory.tables_get(True)
-        table: Table
-        for table in tables:
-            downloads_count += digikey.table_csvs_download(table, from_root_path, downloads_count)
-        return downloads_count
+    #     # Wrap up any requested *tracing* and return *result*;
+    #     result: bool = True
+    #     return result
 
     # Digikey.directory_csv_read_and_process():
     # @trace(1)
@@ -805,7 +868,7 @@ class Digikey:
 
     @staticmethod
     # Digikey.hrefs_table_show():
-    def hrefs_table_show(hrefs_table: "Dict[str, List[Match]]", limit: int) -> None:
+    def hrefs_table_show(hrefs_table: Dict[str, List[Match]], limit: int) -> None:
         # Iterate over a sorted *hrefs_table_keys*:
         hrefs_table_keys: List[str] = sorted(hrefs_table.keys())
         index: int
@@ -835,8 +898,18 @@ class Digikey:
     def process(self) -> None:
         """Read in the example `.csv` files for each collection table.
 
-        The top level products HTML page at `https://www.digikey.com/products/en`
-        is parsed and used to construct the *digikey_collection*.
+        The top level products HTML page at
+        `https://www.digikey.com/products/en` is parsed to identify the
+        overall structure of the collection.  If the require directories
+        and sub-directories do not exist, they are created.  Each table
+        has an associated `.csv` file and `.xml` file stored in the
+        directory structure.  The `.csv` file contains a partial list of
+        the parts associated with the the table.  If this file is not
+        present in the directory structure, it is downloaded and stored
+        into the data structure.  After that, all of the `.csv` files
+        are analyzed to guess column types.  The result of the analysis
+        is the table `.xml` file that is stored into the directory
+        structure.
         """
         # Grab some values from *digikey*:
         digikey: Digikey = self
@@ -846,10 +919,11 @@ class Digikey:
         # into a Beautiful *soup* tree:
         beautiful_soup: BeautifulSoup = digikey.soup_read()
 
-        # Sweep through the *soup* tree and get a href information stuffed into *href_tables*:
+        # Sweep through the *soup* tree and get href information stuffed into *href_tables*:
         hrefs_table: Dict[str, List[Match]] = digikey.soup_extract(beautiful_soup)
 
-        # Extract the *digikey_collection* structure using *hrefs_table*:
+        # Sweep of the data stored in *href_tables* to construct the initial organization
+        # of the *collection*:
         if tracing:
             print(f"{tracing}***************************************************************")
         collection: Collection = digikey.collection_extract(hrefs_table)
@@ -862,61 +936,28 @@ class Digikey:
             show_lines_text = "\n".join(show_lines)
             print(show_lines_text)
 
-        # Perform a verification step:
+        # Perform a verification step to see if we screwed up:
         digikey.collection_verify(collection, hrefs_table)
 
-        # Reorganize and verify *collection*:
+        # Reorganize the *collection* to have a little better structure than what is
+        # provided by the Digikey site:
         digikey.collection_reorganize(collection)
 
         # Make sure we have an example `.csv` file for each table in *digikey_collection*:
-        # print(f"{tracing}&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-        downloads_count: int = digikey.collection_csvs_download(collection)
+        if tracing:
+            print(f"{tracing}&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+        root_path: Path = digikey.root_path
+        downloads_count: int = collection.csvs_download(root_path, Digikey.csv_fetch)
         if tracing:
             print(f"{tracing}downloads_count={downloads_count}")
 
-        # Clear out the root directory and repoulate it with updated tables:
-        # digikey.root_directory_clear()
-        # print(f"{tracing}================================================================")
+        # Perform the analysis of the `.csv` files and generate the table `.xml` files:
+        if tracing:
+            print(f"{tracing}================================================================")
         digikey.collection_csvs_read_and_process(collection, True)
 
-    # Digikey.root_directory_clear():
-    # @trace(1)
-    def root_directory_clear(self) -> None:
-        # Scan the *root_directory* of *digikey* (i.e. *self*) for all sub files and directories:
-        digikey: Digikey = self
-        root_path: Path = digikey.root_path
-        file_paths: List[Path] = list(root_path.glob("**"))
-
-        # Sort *file_name* them so that the longest names come first (i.e. -negative length).
-        file_path: Path
-        file_paths.sort(key=lambda file_path: -len(file_path.as_posix()))
-
-        # Visit each *file_name* in *file_names* and delete them (if appropriate):
-        file_path_index: int
-        tracing: str = tracing_get()
-        for file_path_index, file_path in enumerate(file_paths):
-            # Hang onto the `README.md` and the top level directory:
-            delete: bool = not (file_path.name == "README.md" or file_path == root_path)
-
-            # *delete* *file_path* if appropiate:
-            if delete:
-                # *file_name* is a directory:
-                if file_path.is_dir():
-                    if tracing:
-                        print(f"{tracing}File[file_path_index]: Remove file '{file_path}'")
-                    file_path.rmdir()
-                else:
-                    # *file_name* is a file:
-                    if tracing:
-                        print(f"{tracing}File[{file_path_index}]: Remove directory '{file_path}'")
-                    file_path.unlink()
-            else:
-                # *file_name* is to be kept:
-                if tracing:
-                    print(f"{tracing}[{file_path_index}]: Keep '{file_path}'")
-
     # Digikey.soup_extract():
-    def soup_extract(self, beautiful_soup: BeautifulSoup) -> "Dict[str, List[Match]]":
+    def soup_extract(self, beautiful_soup: BeautifulSoup) -> Dict[str, List[Match]]:
         # Now we use the *bs4* module to screen scrape the information we want from *soup*.
         # We are interested in sections of HTML that looks as follows:
         #
@@ -1073,120 +1114,75 @@ class Digikey:
         assert isinstance(soup, BeautifulSoup)
         return soup
 
-    # Digikey.table_csvs_download():
-    def table_csvs_download(self, table: Table, from_root_path: Path, downloads_count: int) -> int:
+    # Digikey.csv_fetch():
+    @staticmethod
+    def csv_fetch(table: Table, csv_path: Path, downloads_count: int) -> int:
         """TODO"""
         # Grab some values from *digikey_table* (i.e. *self*):
-        digikey: Digikey = self
-        bom_manager: BomManager = digikey.bom_manager
         name: str = table.name
         nonce: int = table.nonce
-
-        # Construct the two likely file name locations:
-        to_file_name: Callable[[str], str] = bom_manager.to_file_name
-        name_csv_file_name: str = to_file_name(name) + ".csv"
-        name_csv_file_path: Path = from_root_path / name_csv_file_name
-
-        # Perform any requested *tracing*:
+        fv: str = f"-8|{nonce}"
         tracing: str = tracing_get()
         if tracing:
-            print(f"{tracing}from_root_path='{from_root_path}'")
-            print(f"{tracing}name_csv_file_path='{name_csv_file_path}'")
-        if name_csv_file_path.is_file():
-            # The *name_csv_file_path* file already exists and there nothing more to do:
-            if tracing:
-                print(f"{tracing}File '{name_csv_file_path}' already exists.  Nothing to do.")
-            pass
-        else:
-            # The first download happens immediately and the subsequent ones are delayed by
-            # 60 seconds:
-            if downloads_count >= 1:
-                print("Waiting 60 seconds....")
-                time.sleep(60)
+            print(f"{tracing}name='{name}'")
+            print(f"{tracing}nonce='{nonce}'")
+            print(f"{tracing}fv='{fv}'")
+        print(f"Downloading '{csv_path}'")
 
-            # Compute the *url*, *parameters*, and *headers* needed for the *request*:
-            url: str = "https://www.digikey.com/product-search/download.csv"
-            parameters: Dict[str, str] = {
-                "FV": "ffe{0:05x}".format(nonce),
-                "quantity": "0",
-                "ColumnSort": "0",
-                "page": "1",
-                "pageSize": "500"
+        # Compute the *url*, *parameters*, and *headers* needed for the *request*:
+        url: str = "https://www.digikey.com/product-search/download.csv"
+        parameters: Dict[str, str] = {
+            "FV": fv,
+            "quantity": "0",
+            "ColumnSort": "0",
+            "page": "1",
+            "pageSize": "500"
+        }
+        headers: Dict[str, str] = {
+            "authority": "www.digikey.com",
+            "accept-encoding": "gzip, deflate, br",
+            "cookie": ("i10c.bdddb="
+                       "c2-94990ugmJW7kVZcVNxn4faE4FqDhn8MKnfIFvs7GjpBeKHE8KVv5aK34FQDgF"
+                       "PFsXXF9jma8opCeDMnVIOKCaK34GOHjEJSFoCA9oxF4ir7hqL8asJs4nXy9FlJEI"
+                       "8MujcFW5Bx9imDEGHDADOsEK9ptrlIgAEuIjcp4olPJUjxXDMDVJwtzfuy9FDXE5"
+                       "sHKoXGhrj3FpmCGDMDuQJs4aLb7AqsbFDhdjcF4pJ4EdrmbIMZLbAQfaK34GOHbF"
+                       "nHKo1rzjl24jP7lrHDaiYHK2ly9FlJEADMKpXFmomx9imCGDMDqccn4fF4hAqIgF"
+                       "JHKRcFFjl24iR7gIfTvaJs4aLb4FqHfADzJnXF9jqd4iR7gIfz8t0TzfKyAnpDgp"
+                       "8MKEmA9og3hdrCbLvCdJSn4FJ6EFlIGEHKOjcp8sm14iRBkMT8asNwBmF3jEvJfA"
+                       "DwJtgD4oL1Eps7gsLJaKJvfaK34FQDgFfcFocAAMr27pmCGDMD17GivaK34GOGbF"
+                       "nHKomypOTx9imDEGHDADOsTpF39ArqeADwFoceWjl24jP7gIHDbDPRzfwy9JlIlA"
+                       "DTFocAEP"),
+            "upgrade-insecure-requests": "1",
+            "accept": ("text/html,application/xhtml+xml,application/xml;"
+                       "q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3"),
+            "sec-fetch-user": "?1",
+            "sec-fetch-mode": "navigate",
+            "accept-language": "en-US,en;q=0.9",
             }
-            headers: Dict[str, str] = {
-                "authority": "www.digikey.com",
-                "accept-encoding": "gzip, deflate, br",
-                "cookie": ("i10c.bdddb="
-                           "c2-94990ugmJW7kVZcVNxn4faE4FqDhn8MKnfIFvs7GjpBeKHE8KVv5aK34FQDgF"
-                           "PFsXXF9jma8opCeDMnVIOKCaK34GOHjEJSFoCA9oxF4ir7hqL8asJs4nXy9FlJEI"
-                           "8MujcFW5Bx9imDEGHDADOsEK9ptrlIgAEuIjcp4olPJUjxXDMDVJwtzfuy9FDXE5"
-                           "sHKoXGhrj3FpmCGDMDuQJs4aLb7AqsbFDhdjcF4pJ4EdrmbIMZLbAQfaK34GOHbF"
-                           "nHKo1rzjl24jP7lrHDaiYHK2ly9FlJEADMKpXFmomx9imCGDMDqccn4fF4hAqIgF"
-                           "JHKRcFFjl24iR7gIfTvaJs4aLb4FqHfADzJnXF9jqd4iR7gIfz8t0TzfKyAnpDgp"
-                           "8MKEmA9og3hdrCbLvCdJSn4FJ6EFlIGEHKOjcp8sm14iRBkMT8asNwBmF3jEvJfA"
-                           "DwJtgD4oL1Eps7gsLJaKJvfaK34FQDgFfcFocAAMr27pmCGDMD17GivaK34GOGbF"
-                           "nHKomypOTx9imDEGHDADOsTpF39ArqeADwFoceWjl24jP7gIHDbDPRzfwy9JlIlA"
-                           "DTFocAEP")
-                }
 
-            # Perform the download:
-            if tracing:
-                print(f"{tracing}Fetching the '{name}':{nonce}")
-            response: requests.Response = requests.get(url, params=parameters, headers=headers)
-            downloads_count += 1
-            # print(f"response.headers={response.headers}")
-            # print(f"rsponse.content='{response.content}")
-            # response_encoding: str = response.encoding
-            content: str = response.text
+        # Perform the download:
+        if tracing:
+            print(f"{tracing}Fetching the '{name}':{nonce}")
+        response: requests.Response = requests.get(url, params=parameters, headers=headers)
+        if tracing:
+            print(f"{tracing}response.headers={response.headers}")
+            print(f"{tracing}response.content='{response.content}")
+            print(f"{tracing}response.encoding='{response.encoding}")
+        csv_content: str = response.text
+        # print(csv_content)
+        # if tracing:
+        #     print(csv_content)
 
-            # First, make sure that *from_root_directory* exists, than write out the file
-            if tracing:
-                print(f"{tracing}Write out fetch .csv file out to '{name_csv_file_path}'.")
-            from_root_path.mkdir(parents=True, exist_ok=True)
-            name_csv_file_path.write_text(content)
+        # First, make sure that the *csv_path_path* directory exists, than write the
+        # *csv_content* out to the *csv_path* file:
+        if tracing:
+            print(f"{tracing}Write out fetched .csv file out to '{csv_path}'.")
+        csv_path_parent: Path = csv_path.parent
+        csv_path_parent.mkdir(parents=True, exist_ok=True)
+        csv_path.write_text(csv_content)
 
+        downloads_count += 1
         return downloads_count
-
-
-# Match:
-class Match:
-    """Represents an HRef match."""
-
-    def __init__(self, href: str, base: str, nonce: int,
-                 a_content: str, li_content: str, url: str) -> None:
-        """TODO"""
-        # match: Match = self
-        self.href: str = href
-        self.base: str = base
-        self.nonce: int = nonce
-        self.a_content: str = a_content
-        self.li_content: str = li_content
-        self.url: str = url
-
-    def __str__(self):
-        """TODO"""
-        match: Match = self
-        result: str = "Match(???)"
-        if hasattr(match, "base"):
-            href: str = match.href
-            base: str = match.base
-            nonce: int = match.nonce
-            a_content: str = match.a_content
-            li_content: str = match.li_content
-            url: str = match.url
-            result = f"'Match('{href}', '{base}', {nonce}, '{a_content}', '{li_content}', '{url}')"
-        return result
-
-    def key(self) -> Tuple[str, str, int, str, str, str]:
-        match: Match = self
-        href: str = match.href
-        base: str = match.base
-        nonce: int = match.nonce
-        a_content: str = match.a_content
-        li_content: str = match.li_content
-        url: str = match.url
-        tuple: Tuple[str, str, int, str, str, str] = (href, base, nonce, a_content, li_content, url)
-        return tuple
 
 
 if __name__ == "__main__":
