@@ -307,6 +307,7 @@ class Digikey:
         # Create the *collection*:
         collection: Collection = Collection(bom_manager, "Digi-Key",
                                             collections_root_path, searches_root_path)
+        collection_key: int = collection.collection_key
 
         # Create the sorted *hrefs_table_keys*:
         hrefs_table_keys: List[Tuple[int, str]] = list(enumerate(sorted(hrefs_table.keys())))
@@ -364,7 +365,7 @@ class Digikey:
                 if tracing:
                     print(f"{tracing}new directory '{name}'")
                 assert isinstance(url, str)
-                current_directory = Directory(bom_manager, name, url, nonce)
+                current_directory = Directory(bom_manager, name, collection_key, url)
                 assert isinstance(current_directory, Directory)
                 collection.directory_insert(current_directory)
             else:
@@ -372,7 +373,6 @@ class Digikey:
                 # Note: the initializer automatically appends *table* to *current_directory*:
                 assert current_directory is not None
                 assert isinstance(url, str)
-                collection_key: Tuple[int, int] = (-1, -1)
                 table: Table = Table(bom_manager, name, collection_key, url, nonce, base)
                 current_directory.table_insert(table)
 
@@ -483,179 +483,6 @@ class Digikey:
 
             # Now we can fail:
             assert errors == 0, f"{errors} Error found"
-
-    # # Digikey.collection_csvs_download():
-    # def collection_csvs_download(self, collection: Collection) -> int:
-    #     # Grab the *csvs_directory* from *digikey* (i.e. *self*):
-    #     digikey: Digikey = self
-    #     bom_manager: BomManager = digikey.bom_manager
-    #     root_path: Path = digikey.root_path
-    #
-    #     # Create *digikey_collection_file_name* (hint: it is simply "Digikey"):
-    #     collection_name: str = collection.name
-    #     to_file_name: Callable[[str], str] = bom_manager.to_file_name
-    #     collection_file_name = to_file_name(collection_name)
-    #
-    #     # Create the *collection_root_path* which is an extra directory with
-    #     # the collection name.  This is consistent with the organization of the
-    #     # searches directories, where first directies specify a collection name:
-    #     collection_root_path: Path = root_path / collection_file_name
-    #
-    #     # Fetch example `.csv` files for each table in *collection*:
-    #     downloads_count: int = 0
-    #     directories: List[Directory] = collection.directories_get(True)
-    #     directory: Directory
-    #     for directory in directories:
-    #         # Create the *from_root_path* to the corresponding *directory* location
-    #         # in the file system:
-    #         directory_name: str = directory.name
-    #         directory_file_name: str = to_file_name(directory_name)
-    #         from_root_path: Path = collection_root_path / directory_file_name
-
-    #         # Now recursively visit each of the *digikey_directory*:
-    #         downloads_count += digikey.directory_csvs_download(directory,
-    #                                                            from_root_path, downloads_count)
-    #     return downloads_count
-
-    # Digikey.csv_fetch():
-    # @trace(1)
-    # def csv_fetch(self, search_url: str, csv_file_name: str) -> bool:
-    #     # Construct the header values that need to be sent with the *search_url*:
-    #     authority_text: str = "www.digikey.com"
-    #     accept_text: str = (
-    #         "text/html,application/xhtml+xml,application/xml;"
-    #         "q=0.9,image/webp,image/apng,*/*;"
-    #         "q=0.8,application/signed-exchange;"
-    #         "v=b3"
-    #     )
-    #     accept_encoding_text: str = "gzip, deflate, br"
-    #     cookie_text: str = (
-    #         "i10c.bdddb=c2-f0103ZLNqAeI3BH6yYOfG7TZlRtCrMwzKDQfPMtvESnCuVjBtyWjJ1l"
-    #         "kqXtKsvswxDrjRHdkESNCtx04RiOfGqfIlRUHqt1qPnlkPolfJSiIRsomx0RhMqeKlRtT3"
-    #         "jxvKEOjKMDfJSvUoxo6uXWaGVZkqoAhloxqQlofPwYkJcS6fhQ6tzOgotZkQMtHDyjnA4lk"
-    #         "PHeIKNnroxoY8XJKBvefrzwFru4qPnlkPglfJSiIRvjBTuTfbEZkqMupstsvz8qkl7wWr3i"
-    #         "HtspjsuTFBve9SHoHqjyTKIPfPM3uiiAioxo6uXOfGvdfq4tFloxqPnlkPcxyESnCuVjBt1"
-    #         "VmBvHmsYoHqjxVKDq3fhvfJSiIRsoBsxOftucfqRoMRjxVKDq3BuEMuNnHoyM9oz3aGv4ul"
-    #         "RtCrMsvP8tJOPeoESNGw2q6tZSiN2ZkQQxHxjxVOHukKMDjOQlCtXnGt4OfqujoqMtrpt3y"
-    #         "KDQjVMffM3iHtsolozT7WqeklSRGloXqPDHZHCUfJSiIRvjBTuTfQeKKYMtHlpVtKDQfPM2"
-    #         "uESnCuVm6tZOfGK1fqRoIOjxvKDrfQvYkvNnuJsojozTaLW"
-    #     )
-
-    #     # Construct *headers*:
-    #     headers: Dict[str, str] = {
-    #         "authority": authority_text,
-    #         "accept": accept_text,
-    #         "accept-encoding": accept_encoding_text,
-    #         "cookie": cookie_text
-    #     }
-
-    #     # Attempt the fetch the contents of *search_url* using *headers*:
-    #     try:
-    #         response: requests.Response = requests.get(search_url, headers=headers)
-    #         response.raise_for_status()
-    #     except requests.exceptions.HTTPError as http_error:
-    #         assert False, f"HTTP error occurred '{http_error}'"
-    #     except Exception as error:
-    #         assert False, f"Other exception occurred: '{error}'"
-
-    #     # Now parse the resulting *html_text* using a *soup* to find the *csv_url*:
-    #     html_text: str = str(response.content)
-
-    #     soup: Optional[BeautifulSoup] = BeautifulSoup(html_text, features="lxml")
-    #     assert soup is not None
-    #     tracing: str = tracing_get()
-    #     # print(f"{tracing}type(soup)=", type(soup))
-    #     pairs: List[str] = []
-    #     pairs_text: Optional[str] = None
-    #     if tracing:
-    #         print(f"{tracing}here 2b")
-    #     formtag: Element.Tag
-    #     for form_tag in soup.find_all("form"):
-    #         name: str = form_tag.get("name")
-    #         if name == "downloadform":
-    #             # We found it:
-    #             if tracing:
-    #                 print(f"{tracing}form_tag={form_tag}")
-    #             index: int
-    #             input_tag: Element.Tag
-    #             for index, input_tag in enumerate(form_tag.children):
-    #                 # print(input_tag)
-    #                 input_tag_name: Optional[str] = input_tag.name
-    #                 if isinstance(input_tag_name, str) and input_tag_name.lower() == "input":
-    #                     input_name: str = input_tag.get("name")
-    #                     input_value: str = input_tag.get("value")
-    #                     input_value = input_value.replace(",", "%2C")
-    #                     input_value = input_value.replace('|', "%7C")
-    #                     input_value = input_value.replace(' ', "+")
-    #                     pair: str = f"{input_name}={input_value}"
-    #                     if tracing:
-    #                         print(f"{tracing}input_name='{input_name}'")
-    #                         print(f"{tracing}input_value='{input_value}'")
-    #                         print(f"{tracing}pair='{pair}'")
-    #                     pairs.append(pair)
-    #             pairs_text = '&'.join(pairs)
-    #             if tracing:
-    #                 print(f"{tracing}pairs_text='{pairs_text}'")
-    #     assert isinstance(pairs_text, str)
-
-    #     # Construct the *csv_url*:
-    #     csv_url: str = "https://www.digikey.com/product-search/download.csv?" + pairs_text
-    #     if tracing:
-    #         print(f"{tracing}csv_url='{csv_url}'")
-
-    #     # Construct the text strings fort the *headers*:
-    #     authority_text = "www.digikey.com"
-    #     accept_text = (
-    #         "text/html,application/xhtml+xml,application/xml;"
-    #         "q=0.9,image/webp,image/apng,*/*;"
-    #         "q=0.8,application/signed-exchange;"
-    #         "v=b3"
-    #     )
-    #     accept_encoding_text = "gzip, deflate, br"
-    #     cookie_text = (
-    #         "i10c.bdddb="
-    #         "c2-94990ugmJW7kVZcVNxn4faE4FqDhn8MKnfIFvs7GjpBeKHE8KVv5aK34FQDgF"
-    #         "PFsXXF9jma8opCeDMnVIOKCaK34GOHjEJSFoCA9oxF4ir7hqL8asJs4nXy9FlJEI"
-    #         "8MujcFW5Bx9imDEGHDADOsEK9ptrlIgAEuIjcp4olPJUjxXDMDVJwtzfuy9FDXE5"
-    #         "sHKoXGhrj3FpmCGDMDuQJs4aLb7AqsbFDhdjcF4pJ4EdrmbIMZLbAQfaK34GOHbF"
-    #         "nHKo1rzjl24jP7lrHDaiYHK2ly9FlJEADMKpXFmomx9imCGDMDqccn4fF4hAqIgF"
-    #         "JHKRcFFjl24iR7gIfTvaJs4aLb4FqHfADzJnXF9jqd4iR7gIfz8t0TzfKyAnpDgp"
-    #         "8MKEmA9og3hdrCbLvCdJSn4FJ6EFlIGEHKOjcp8sm14iRBkMT8asNwBmF3jEvJfA"
-    #         "DwJtgD4oL1Eps7gsLJaKJvfaK34FQDgFfcFocAAMr27pmCGDMD17GivaK34GOGbF"
-    #         "nHKomypOTx9imDEGHDADOsTpF39ArqeADwFoceWjl24jP7gIHDbDPRzfwy9JlIlA"
-    #         "DTFocAEP"
-    #     )
-
-    #     # Construct *headers*:
-    #     headers = {
-    #         "authority": authority_text,
-    #         "accept": accept_text,
-    #         "accept-encoding": accept_encoding_text,
-    #         "cookie": cookie_text
-    #     }
-
-    #     # Attempt the fetch the contents of *csv_fetch_url* using *headers*:
-    #     if tracing:
-    #         print(f"{tracing}A:Fetching '{csv_url}' extracted '{search_url}' contents:")
-    #     try:
-    #         response = requests.get(csv_url, headers=headers)
-    #         response.raise_for_status()
-    #     except requests.exceptions.HTTPError as http_error:
-    #         assert False, f"HTTP error occurred '{http_error}'"
-    #     except Exception as error:
-    #         assert False, f"Other exception occurred: '{error}'"
-
-    #     # Now write *csv_text* out to *csv_file_name*:
-    #     csv_text: str = str(response.content)
-    #     csv_file: TextIO
-    #     with open(csv_file_name, "w") as csv_file:
-    #         csv_file.write(csv_text)
-    #     if tracing:
-    #         print(f"{tracing}Wrote out '{csv_file_name}'")
-
-    #     # Wrap up any requested *tracing* and return *result*;
-    #     result: bool = True
-    #     return result
 
     # Digikey.directory_reorganize():
     @trace(1)
@@ -771,6 +598,10 @@ class Digikey:
             for table_index, table in enumerate(tables_list):
                 directory.remove(table)
 
+        # Get the *collection_key* via *directory*:
+        collection: Collection = directory.collection_get()
+        collection_key: int = collection.collection_key
+
         # Now create a *sub_directory* for each *group_title* in *groups_table*:
         for index, group_name in enumerate(sorted(groups_table.keys())):
             tables_list = groups_table[group_name]
@@ -807,7 +638,6 @@ class Digikey:
                 # Create the new *sub_table*:
                 # path = sub_directory_path
                 # url = table.url
-                collection_key: Tuple[int, int] = (-1, -1)
                 table = Table(bom_manager, name, collection_key, url, nonce, base)
                 sub_directory.table_insert(table)
 
@@ -899,7 +729,7 @@ class Digikey:
         if tracing:
             print(f"{tracing}&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
         root_path: Path = digikey.root_path
-        downloads_count: int = collection.csvs_download(root_path, Digikey.csv_fetch)
+        downloads_count: int = collection.csvs_download(root_path, Digikey.table_csv_fetch)
         if tracing:
             print(f"{tracing}downloads_count={downloads_count}")
 
@@ -1066,11 +896,26 @@ class Digikey:
         assert isinstance(soup, BeautifulSoup)
         return soup
 
-    # Digikey.csv_fetch():
+    # Digikey.table_csv_fetch():
     @staticmethod
-    def csv_fetch(table: Table, csv_path: Path, downloads_count: int) -> int:
-        """TODO"""
-        # Grab some values from *digikey_table* (i.e. *self*):
+    def table_csv_fetch(table: Table) -> str:
+        """Return the example .csv content for a table content.
+
+        Using the information in *table*, a URL is consturcted and
+        used to fetch table data in CSV format and return it as
+        a string.  The returned string has the headers and data lines
+        separated by a new-line character.
+
+        Args:
+            *table* (*Table*): The *table* to fetch example .csv
+                data for.
+
+        Returns:
+            (*str*) Returns a the .csv data as single string with
+            embedded new-lines.
+
+        """
+        # Grab some values from *table*:
         name: str = table.name
         nonce: int = table.nonce
         fv: str = f"-8|{nonce}"
@@ -1079,7 +924,6 @@ class Digikey:
             print(f"{tracing}name='{name}'")
             print(f"{tracing}nonce='{nonce}'")
             print(f"{tracing}fv='{fv}'")
-        print(f"Downloading '{csv_path}'")
 
         # Compute the *url*, *parameters*, and *headers* needed for the *request*:
         url: str = "https://www.digikey.com/product-search/download.csv"
@@ -1114,27 +958,161 @@ class Digikey:
 
         # Perform the download:
         if tracing:
-            print(f"{tracing}Fetching the '{name}':{nonce}")
+            print(f"{tracing}Fetching the table for '{name}':{nonce}")
         response: requests.Response = requests.get(url, params=parameters, headers=headers)
+        csv_content: str = response.text
+
+        # Perform any additional requested *tracing* before returning *csv_content*:
         if tracing:
             print(f"{tracing}response.headers={response.headers}")
             print(f"{tracing}response.content='{response.content}")
             print(f"{tracing}response.encoding='{response.encoding}")
-        csv_content: str = response.text
-        # print(csv_content)
-        # if tracing:
-        #     print(csv_content)
+            trace_level: int = trace_level_get()
+            if tracing and trace_level >= 2:
+                print(csv_content)
+        return csv_content
 
-        # First, make sure that the *csv_path_path* directory exists, than write the
-        # *csv_content* out to the *csv_path* file:
+    # Digikey.url_csv_fetch():
+    @staticmethod
+    def url_csv_fetch(self, url: str) -> str:
+        """Return table information in .csv format for a URL.
+
+        Args:
+            *url* (*str*): The URL used to find and download the .csv
+            data for.
+
+        Returns:
+            (*str*) Returns the table header and following data lines
+            as a single string separated by new-line characters.
+
+        """
+        # Construct the header values that need to be sent with the *search_url*:
+        authority_text: str = "www.digikey.com"
+        accept_text: str = (
+            "text/html,application/xhtml+xml,application/xml;"
+            "q=0.9,image/webp,image/apng,*/*;"
+            "q=0.8,application/signed-exchange;"
+            "v=b3"
+        )
+        accept_encoding_text: str = "gzip, deflate, br"
+        cookie_text: str = (
+            "i10c.bdddb=c2-f0103ZLNqAeI3BH6yYOfG7TZlRtCrMwzKDQfPMtvESnCuVjBtyWjJ1l"
+            "kqXtKsvswxDrjRHdkESNCtx04RiOfGqfIlRUHqt1qPnlkPolfJSiIRsomx0RhMqeKlRtT3"
+            "jxvKEOjKMDfJSvUoxo6uXWaGVZkqoAhloxqQlofPwYkJcS6fhQ6tzOgotZkQMtHDyjnA4lk"
+            "PHeIKNnroxoY8XJKBvefrzwFru4qPnlkPglfJSiIRvjBTuTfbEZkqMupstsvz8qkl7wWr3i"
+            "HtspjsuTFBve9SHoHqjyTKIPfPM3uiiAioxo6uXOfGvdfq4tFloxqPnlkPcxyESnCuVjBt1"
+            "VmBvHmsYoHqjxVKDq3fhvfJSiIRsoBsxOftucfqRoMRjxVKDq3BuEMuNnHoyM9oz3aGv4ul"
+            "RtCrMsvP8tJOPeoESNGw2q6tZSiN2ZkQQxHxjxVOHukKMDjOQlCtXnGt4OfqujoqMtrpt3y"
+            "KDQjVMffM3iHtsolozT7WqeklSRGloXqPDHZHCUfJSiIRvjBTuTfQeKKYMtHlpVtKDQfPM2"
+            "uESnCuVm6tZOfGK1fqRoIOjxvKDrfQvYkvNnuJsojozTaLW"
+        )
+
+        # Construct *headers*:
+        headers: Dict[str, str] = {
+            "authority": authority_text,
+            "accept": accept_text,
+            "accept-encoding": accept_encoding_text,
+            "cookie": cookie_text
+        }
+
+        # Attempt the fetch the contents of *search_url* using *headers*:
+        try:
+            response: requests.Response = requests.get(url, headers=headers)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as http_error:
+            assert False, f"HTTP error occurred '{http_error}'"
+        except Exception as error:
+            assert False, f"Other exception occurred: '{error}'"
+        html_text: str = str(response.content)
+
+        # Now parse the resulting *html_text* using a *soup* to find the *csv_url*:
+        soup: Optional[BeautifulSoup] = BeautifulSoup(html_text, features="lxml")
+        assert soup is not None
+        # print(f"{tracing}type(soup)=", type(soup))
+        pairs: List[str] = []
+        pairs_text: Optional[str] = None
+        tracing: str = tracing_get()
         if tracing:
-            print(f"{tracing}Write out fetched .csv file out to '{csv_path}'.")
-        csv_path_parent: Path = csv_path.parent
-        csv_path_parent.mkdir(parents=True, exist_ok=True)
-        csv_path.write_text(csv_content)
+            print(f"{tracing}here 2b")
+        formtag: Element.Tag
+        for form_tag in soup.find_all("form"):
+            name: str = form_tag.get("name")
+            if name == "downloadform":
+                # We found it:
+                if tracing:
+                    print(f"{tracing}form_tag={form_tag}")
+                index: int
+                input_tag: Element.Tag
+                for index, input_tag in enumerate(form_tag.children):
+                    # print(input_tag)
+                    input_tag_name: Optional[str] = input_tag.name
+                    if isinstance(input_tag_name, str) and input_tag_name.lower() == "input":
+                        input_name: str = input_tag.get("name")
+                        input_value: str = input_tag.get("value")
+                        input_value = input_value.replace(",", "%2C")
+                        input_value = input_value.replace('|', "%7C")
+                        input_value = input_value.replace(' ', "+")
+                        pair: str = f"{input_name}={input_value}"
+                        if tracing:
+                            print(f"{tracing}input_name='{input_name}'")
+                            print(f"{tracing}input_value='{input_value}'")
+                            print(f"{tracing}pair='{pair}'")
+                        pairs.append(pair)
+                pairs_text = '&'.join(pairs)
+                if tracing:
+                    print(f"{tracing}pairs_text='{pairs_text}'")
+        assert isinstance(pairs_text, str)
 
-        downloads_count += 1
-        return downloads_count
+        # Construct the *csv_url*:
+        csv_url: str = "https://www.digikey.com/product-search/download.csv?" + pairs_text
+        if tracing:
+            print(f"{tracing}csv_url='{csv_url}'")
+
+        # Construct the text strings fort the *headers*:
+        authority_text = "www.digikey.com"
+        accept_text = (
+            "text/html,application/xhtml+xml,application/xml;"
+            "q=0.9,image/webp,image/apng,*/*;"
+            "q=0.8,application/signed-exchange;"
+            "v=b3"
+        )
+        accept_encoding_text = "gzip, deflate, br"
+        cookie_text = (
+            "i10c.bdddb="
+            "c2-94990ugmJW7kVZcVNxn4faE4FqDhn8MKnfIFvs7GjpBeKHE8KVv5aK34FQDgF"
+            "PFsXXF9jma8opCeDMnVIOKCaK34GOHjEJSFoCA9oxF4ir7hqL8asJs4nXy9FlJEI"
+            "8MujcFW5Bx9imDEGHDADOsEK9ptrlIgAEuIjcp4olPJUjxXDMDVJwtzfuy9FDXE5"
+            "sHKoXGhrj3FpmCGDMDuQJs4aLb7AqsbFDhdjcF4pJ4EdrmbIMZLbAQfaK34GOHbF"
+            "nHKo1rzjl24jP7lrHDaiYHK2ly9FlJEADMKpXFmomx9imCGDMDqccn4fF4hAqIgF"
+            "JHKRcFFjl24iR7gIfTvaJs4aLb4FqHfADzJnXF9jqd4iR7gIfz8t0TzfKyAnpDgp"
+            "8MKEmA9og3hdrCbLvCdJSn4FJ6EFlIGEHKOjcp8sm14iRBkMT8asNwBmF3jEvJfA"
+            "DwJtgD4oL1Eps7gsLJaKJvfaK34FQDgFfcFocAAMr27pmCGDMD17GivaK34GOGbF"
+            "nHKomypOTx9imDEGHDADOsTpF39ArqeADwFoceWjl24jP7gIHDbDPRzfwy9JlIlA"
+            "DTFocAEP"
+        )
+
+        # Construct *headers*:
+        headers = {
+            "authority": authority_text,
+            "accept": accept_text,
+            "accept-encoding": accept_encoding_text,
+            "cookie": cookie_text
+        }
+
+        # Attempt the fetch the contents of *csv_fetch_url* using *headers*:
+        if tracing:
+            print(f"{tracing}A:Fetching '{csv_url}' extracted from '{url}' contents:")
+        try:
+            response = requests.get(csv_url, headers=headers)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as http_error:
+            assert False, f"HTTP error occurred '{http_error}'"
+        except Exception as error:
+            assert False, f"Other exception occurred: '{error}'"
+
+        # Now write *csv_text* out to *csv_file_name*:
+        csv_text: str = str(response.content)
+        return csv_text
 
 
 if __name__ == "__main__":
