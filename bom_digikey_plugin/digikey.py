@@ -62,6 +62,39 @@ from typing import Any, Dict, List, IO, Optional, Tuple
 # Match = Tuple[str, str, int, str, str, str]
 
 
+# collection_get():
+def collection_get() -> Tuple[str, Path]:
+    """Return the name and root path for Digi-key collection.
+
+    As an overview, this is the "bom_manager_collection_get" entry
+    point that is defined in this module's `setup.py` file.  It is
+    identified as a "bom_manager_collection_get" entry point.  Using
+    the magic of the `pkg_resources` another module can find this entry
+    point, load this module, and invoke this function.  Now we know
+    why this function exists, we can describe what this function
+    actually does.
+
+    The purpose of this fucntion is to provide the necessary
+    information required to construct a Digi-Key *Collection* object.
+    It turns outn that all that is needed the collection name (i.e.
+    "Digi-Key") and the root *Path* of the root directory of the
+    the Digi-Key collections tables `.xml` files.
+
+    Returns:
+        (*str*): The name of the collection (i.e. "Digi-Key".)
+        (*Path*): The *Path* to the root of the Digi-key collection
+            directory tree containing Digi-key table `.xml` files.
+
+    """
+
+    # Compute the various file paths and return the results:
+    digikey_py_file_name: str = __file__
+    digikey_py_path: Path = Path(digikey_py_file_name)
+    home_path: Path = digikey_py_path.parent
+    root_path: Path = home_path / "ROOT"
+    return "Digi-Key", root_path
+
+
 # main():
 # @trace(1)
 def main() -> int:
