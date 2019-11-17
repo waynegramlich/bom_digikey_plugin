@@ -63,7 +63,7 @@ from typing import Any, Dict, List, IO, Optional, Tuple
 
 
 # collection_get():
-def collection_get() -> Tuple[str, Path]:
+def collection_get() -> Tuple[str, str, Path]:
     """Return the name and root path for Digi-key collection.
 
     As an overview, this is the "bom_manager_collection_get" entry
@@ -81,6 +81,8 @@ def collection_get() -> Tuple[str, Path]:
     the Digi-Key collections tables `.xml` files.
 
     Returns:
+        (*str*): The name of the collections category
+                (i.e. "Electronics".)
         (*str*): The name of the collection (i.e. "Digi-Key".)
         (*Path*): The *Path* to the root of the Digi-key collection
             directory tree containing Digi-key table `.xml` files.
@@ -92,7 +94,7 @@ def collection_get() -> Tuple[str, Path]:
     digikey_py_path: Path = Path(digikey_py_file_name)
     home_path: Path = digikey_py_path.parent
     root_path: Path = home_path / "ROOT"
-    return "Digi-Key", root_path
+    return "Electronics", "Digi-Key", root_path
 
 
 # main():
